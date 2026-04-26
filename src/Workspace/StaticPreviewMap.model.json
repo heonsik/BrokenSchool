@@ -1,0 +1,640 @@
+{
+  "className": "Model",
+  "children": [
+    {
+      "name": "학교_기반바닥",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [700, 2, 460],
+        "Position": [0, -1, 0],
+        "Color": [0.32, 0.34, 0.38]
+      }
+    },
+
+    {
+      "name": "중앙복도_표시",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "CanCollide": false,
+        "Size": [640, 3, 14],
+        "Position": [0, 1.5, 0],
+        "Color": [0.22, 0.65, 1.0],
+        "Material": "Neon"
+      }
+    },
+    {
+      "name": "북쪽복도_표시",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "CanCollide": false,
+        "Size": [520, 3, 14],
+        "Position": [20, 1.5, 120],
+        "Color": [0.22, 0.52, 0.88],
+        "Material": "Neon"
+      }
+    },
+    {
+      "name": "남쪽복도_표시",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "CanCollide": false,
+        "Size": [520, 3, 14],
+        "Position": [20, 1.5, -145],
+        "Color": [0.88, 0.55, 0.18],
+        "Material": "Neon"
+      }
+    },
+    {
+      "name": "서쪽연결_표시",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "CanCollide": false,
+        "Size": [14, 3, 260],
+        "Position": [-230, 1.5, 0],
+        "Color": [0.18, 0.72, 0.88],
+        "Material": "Neon"
+      }
+    },
+    {
+      "name": "동쪽연결_표시",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "CanCollide": false,
+        "Size": [14, 3, 260],
+        "Position": [250, 1.5, 0],
+        "Color": [0.18, 0.72, 0.88],
+        "Material": "Neon"
+      }
+    },
+
+    {
+      "name": "과학실_구역",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "CanCollide": false,
+        "Size": [56, 5, 38],
+        "Position": [-185, 2.5, 135],
+        "Color": [0.18, 0.72, 0.52],
+        "Material": "Neon",
+        "Transparency": 0.3
+      }
+    },
+    {
+      "name": "음악실_구역",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "CanCollide": false,
+        "Size": [56, 5, 38],
+        "Position": [-95, 2.5, 135],
+        "Color": [0.58, 0.28, 0.88],
+        "Material": "Neon",
+        "Transparency": 0.3
+      }
+    },
+    {
+      "name": "미술실_구역",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "CanCollide": false,
+        "Size": [56, 5, 38],
+        "Position": [125, 2.5, 135],
+        "Color": [0.88, 0.45, 0.18],
+        "Material": "Neon",
+        "Transparency": 0.3
+      }
+    },
+    {
+      "name": "방송실_구역",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "CanCollide": false,
+        "Size": [56, 5, 38],
+        "Position": [225, 2.5, 110],
+        "Color": [0.22, 0.52, 0.88],
+        "Material": "Neon",
+        "Transparency": 0.3
+      }
+    },
+    {
+      "name": "보건실_구역",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "CanCollide": false,
+        "Size": [56, 5, 38],
+        "Position": [-165, 2.5, -145],
+        "Color": [0.88, 0.25, 0.45],
+        "Material": "Neon",
+        "Transparency": 0.3
+      }
+    },
+    {
+      "name": "체육관_구역",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "CanCollide": false,
+        "Size": [86, 5, 58],
+        "Position": [-260, 2.5, -145],
+        "Color": [0.42, 0.50, 0.65],
+        "Material": "Neon",
+        "Transparency": 0.3
+      }
+    },
+    {
+      "name": "운동장_구역",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "CanCollide": false,
+        "Size": [120, 5, 70],
+        "Position": [115, 2.5, -35],
+        "Color": [0.22, 0.68, 0.25],
+        "Material": "Neon",
+        "Transparency": 0.3
+      }
+    },
+    {
+      "name": "도서관_구역",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "CanCollide": false,
+        "Size": [32, 4, 20],
+        "Position": [-12, 2, 31],
+        "Color": [0.52, 0.28, 0.75],
+        "Material": "Neon",
+        "Transparency": 0.3
+      }
+    },
+    {
+      "name": "급식실_구역",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "CanCollide": false,
+        "Size": [34, 4, 20],
+        "Position": [24, 2, -31],
+        "Color": [0.72, 0.48, 0.22],
+        "Material": "Neon",
+        "Transparency": 0.3
+      }
+    },
+    {
+      "name": "발전기실_구역",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "CanCollide": false,
+        "Size": [52, 4, 36],
+        "Position": [230, 2, -145],
+        "Color": [0.22, 0.62, 0.88],
+        "Material": "Neon",
+        "Transparency": 0.3
+      }
+    },
+    {
+      "name": "시작교실_구역",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "CanCollide": false,
+        "Size": [36, 4, 20],
+        "Position": [-46, 2, 25],
+        "Color": [0.28, 0.52, 0.88],
+        "Material": "Neon",
+        "Transparency": 0.3
+      }
+    },
+
+    {
+      "name": "북쪽외벽",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [700, 12, 2],
+        "Position": [0, 6, 230],
+        "Color": [0.45, 0.47, 0.52]
+      }
+    },
+    {
+      "name": "남쪽외벽",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [700, 12, 2],
+        "Position": [0, 6, -230],
+        "Color": [0.45, 0.47, 0.52]
+      }
+    },
+    {
+      "name": "서쪽외벽",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [2, 12, 460],
+        "Position": [-350, 6, 0],
+        "Color": [0.45, 0.47, 0.52]
+      }
+    },
+    {
+      "name": "동쪽외벽_위",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [2, 12, 210],
+        "Position": [350, 6, 125],
+        "Color": [0.45, 0.47, 0.52]
+      }
+    },
+    {
+      "name": "동쪽외벽_아래",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [2, 12, 210],
+        "Position": [350, 6, -125],
+        "Color": [0.45, 0.47, 0.52]
+      }
+    },
+
+    {
+      "name": "과학실_북쪽벽",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [56, 12, 2],
+        "Position": [-185, 6, 153],
+        "Color": [0.21, 0.45, 0.37]
+      }
+    },
+    {
+      "name": "과학실_동쪽벽",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [2, 12, 36],
+        "Position": [-158, 6, 135],
+        "Color": [0.21, 0.45, 0.37]
+      }
+    },
+    {
+      "name": "과학실_서쪽벽",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [2, 12, 36],
+        "Position": [-212, 6, 135],
+        "Color": [0.21, 0.45, 0.37]
+      }
+    },
+    {
+      "name": "음악실_북쪽벽",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [56, 12, 2],
+        "Position": [-95, 6, 153],
+        "Color": [0.41, 0.29, 0.53]
+      }
+    },
+    {
+      "name": "음악실_동쪽벽",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [2, 12, 36],
+        "Position": [-68, 6, 135],
+        "Color": [0.41, 0.29, 0.53]
+      }
+    },
+    {
+      "name": "음악실_서쪽벽",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [2, 12, 36],
+        "Position": [-122, 6, 135],
+        "Color": [0.41, 0.29, 0.53]
+      }
+    },
+    {
+      "name": "미술실_북쪽벽",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [56, 12, 2],
+        "Position": [125, 6, 153],
+        "Color": [0.60, 0.37, 0.27]
+      }
+    },
+    {
+      "name": "미술실_동쪽벽",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [2, 12, 36],
+        "Position": [152, 6, 135],
+        "Color": [0.60, 0.37, 0.27]
+      }
+    },
+    {
+      "name": "미술실_서쪽벽",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [2, 12, 36],
+        "Position": [98, 6, 135],
+        "Color": [0.60, 0.37, 0.27]
+      }
+    },
+    {
+      "name": "방송실_북쪽벽",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [56, 12, 2],
+        "Position": [225, 6, 128],
+        "Color": [0.27, 0.47, 0.60]
+      }
+    },
+    {
+      "name": "방송실_동쪽벽",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [2, 12, 36],
+        "Position": [252, 6, 110],
+        "Color": [0.27, 0.47, 0.60]
+      }
+    },
+    {
+      "name": "방송실_서쪽벽",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [2, 12, 36],
+        "Position": [198, 6, 110],
+        "Color": [0.27, 0.47, 0.60]
+      }
+    },
+    {
+      "name": "보건실_북쪽벽",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [56, 12, 2],
+        "Position": [-165, 6, -127],
+        "Color": [0.51, 0.31, 0.39]
+      }
+    },
+    {
+      "name": "보건실_동쪽벽",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [2, 12, 36],
+        "Position": [-138, 6, -145],
+        "Color": [0.51, 0.31, 0.39]
+      }
+    },
+    {
+      "name": "보건실_서쪽벽",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [2, 12, 36],
+        "Position": [-192, 6, -145],
+        "Color": [0.51, 0.31, 0.39]
+      }
+    },
+    {
+      "name": "체육관_남쪽벽",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [86, 12, 2],
+        "Position": [-260, 6, -174],
+        "Color": [0.34, 0.37, 0.45]
+      }
+    },
+    {
+      "name": "체육관_동쪽벽",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [2, 12, 32],
+        "Position": [-217, 6, -158],
+        "Color": [0.34, 0.37, 0.45]
+      }
+    },
+    {
+      "name": "체육관_서쪽벽",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [2, 12, 32],
+        "Position": [-303, 6, -158],
+        "Color": [0.34, 0.37, 0.45]
+      }
+    },
+
+    {
+      "name": "랜드마크_시작구역",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "CanCollide": false,
+        "Size": [8, 55, 8],
+        "Position": [-52, 27.5, 22],
+        "Color": [0.18, 0.52, 1.0],
+        "Material": "Neon"
+      }
+    },
+    {
+      "name": "랜드마크_북쪽별관",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "CanCollide": false,
+        "Size": [8, 55, 8],
+        "Position": [-185, 27.5, 120],
+        "Color": [0.55, 0.28, 1.0],
+        "Material": "Neon"
+      }
+    },
+    {
+      "name": "랜드마크_남쪽별관",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "CanCollide": false,
+        "Size": [8, 55, 8],
+        "Position": [135, 27.5, -145],
+        "Color": [1.0, 0.52, 0.15],
+        "Material": "Neon"
+      }
+    },
+    {
+      "name": "랜드마크_체육관",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "CanCollide": false,
+        "Size": [8, 55, 8],
+        "Position": [-260, 27.5, -145],
+        "Color": [1.0, 0.82, 0.10],
+        "Material": "Neon"
+      }
+    },
+    {
+      "name": "랜드마크_탈출문",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "CanCollide": false,
+        "Size": [10, 65, 10],
+        "Position": [305, 32.5, 0],
+        "Color": [0.08, 1.0, 0.38],
+        "Material": "Neon"
+      }
+    },
+    {
+      "name": "랜드마크_중앙",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "CanCollide": false,
+        "Size": [6, 50, 6],
+        "Position": [0, 25, 0],
+        "Color": [0.0, 0.88, 1.0],
+        "Material": "Neon"
+      }
+    },
+
+    {
+      "name": "탈출문_프리뷰",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "CanCollide": false,
+        "Size": [14, 14, 24],
+        "Position": [305, 7, 0],
+        "Color": [0.05, 1.0, 0.38],
+        "Material": "Neon",
+        "Transparency": 0.2
+      }
+    },
+    {
+      "name": "탈출문_잠금",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "CanCollide": false,
+        "Size": [10, 10, 18],
+        "Position": [305, 5, 0],
+        "Color": [1.0, 0.15, 0.15],
+        "Transparency": 0.45
+      }
+    },
+
+    {
+      "name": "시작위치_마커",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "CanCollide": false,
+        "Size": [10, 1, 10],
+        "Position": [-52, 1.5, 23],
+        "Color": [0.25, 0.55, 1.0],
+        "Material": "Neon"
+      }
+    },
+    {
+      "name": "발전기_마커",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "CanCollide": false,
+        "Size": [8, 6, 6],
+        "Position": [230, 3, -145],
+        "Color": [0.25, 0.75, 1.0],
+        "Material": "Neon"
+      }
+    },
+    {
+      "name": "퓨즈_1_마커",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "CanCollide": false,
+        "Size": [5, 5, 5],
+        "Position": [-190, 4, 135],
+        "Color": [1.0, 0.88, 0.05],
+        "Material": "Neon",
+        "Shape": "Ball"
+      }
+    },
+    {
+      "name": "퓨즈_2_마커",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "CanCollide": false,
+        "Size": [5, 5, 5],
+        "Position": [135, 4, -155],
+        "Color": [1.0, 0.88, 0.05],
+        "Material": "Neon",
+        "Shape": "Ball"
+      }
+    },
+    {
+      "name": "퓨즈_3_마커",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "CanCollide": false,
+        "Size": [5, 5, 5],
+        "Position": [255, 4, 110],
+        "Color": [1.0, 0.88, 0.05],
+        "Material": "Neon",
+        "Shape": "Ball"
+      }
+    },
+    {
+      "name": "눈괴물_마커",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "CanCollide": false,
+        "Size": [6, 7, 6],
+        "Position": [-6, 4, 0],
+        "Color": [0.9, 0.22, 0.12],
+        "Material": "Neon"
+      }
+    },
+    {
+      "name": "귀신_마커",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "CanCollide": false,
+        "Size": [5, 7, 5],
+        "Position": [6, 4, 28],
+        "Color": [0.78, 0.95, 1.0],
+        "Material": "Neon",
+        "Transparency": 0.3
+      }
+    }
+  ]
+}

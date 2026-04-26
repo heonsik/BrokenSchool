@@ -1,0 +1,60 @@
+{
+  "name": "broken-school",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "Shared": {
+        "$path": "src/ReplicatedStorage/Shared"
+      }
+    },
+    "ServerScriptService": {
+      "$path": "src/ServerScriptService"
+    },
+    "StarterPlayer": {
+      "$properties": {
+        "CharacterWalkSpeed": 16,
+        "CharacterJumpPower": 50
+      },
+      "StarterPlayerScripts": {
+        "$path": "src/StarterPlayer/StarterPlayerScripts"
+      }
+    },
+    "Workspace": {
+      "$properties": {
+        "Gravity": 196.2
+      },
+      "StaticPreviewMap": {
+        "$path": "src/Workspace/StaticPreviewMap.model.json"
+      }
+    },
+    "Lighting": {
+      "$properties": {
+        "Ambient": [
+          0.65,
+          0.68,
+          0.72
+        ],
+        "Brightness": 4.5,
+        "ClockTime": 13.0,
+        "ColorShift_Top": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "EnvironmentDiffuseScale": 0.7,
+        "EnvironmentSpecularScale": 0.5,
+        "FogColor": [
+          0.75,
+          0.78,
+          0.82
+        ],
+        "FogEnd": 3000,
+        "OutdoorAmbient": [
+          0.58,
+          0.62,
+          0.68
+        ]
+      }
+    }
+  }
+}
