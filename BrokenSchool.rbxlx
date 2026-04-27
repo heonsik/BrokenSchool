@@ -3,29 +3,29 @@
     <Properties>
       <string name="Name">Lighting</string>
       <Color3 name="Ambient">
-        <R>0.38</R>
-        <G>0.42</G>
-        <B>0.48</B>
+        <R>0.65</R>
+        <G>0.68</G>
+        <B>0.72</B>
       </Color3>
-      <float name="Brightness">2.4</float>
-      <float name="ClockTime">5.8</float>
+      <float name="Brightness">4.5</float>
+      <float name="ClockTime">13</float>
       <Color3 name="ColorShift_Top">
-        <R>0.157</R>
-        <G>0.176</G>
-        <B>0.275</B>
+        <R>0</R>
+        <G>0</G>
+        <B>0</B>
       </Color3>
-      <float name="EnvironmentDiffuseScale">0.25</float>
-      <float name="EnvironmentSpecularScale">0.35</float>
+      <float name="EnvironmentDiffuseScale">0.7</float>
+      <float name="EnvironmentSpecularScale">0.5</float>
       <Color3 name="FogColor">
-        <R>0.22</R>
-        <G>0.24</G>
-        <B>0.28</B>
+        <R>0.75</R>
+        <G>0.78</G>
+        <B>0.82</B>
       </Color3>
-      <float name="FogEnd">320</float>
+      <float name="FogEnd">3000</float>
       <Color3 name="OutdoorAmbient">
-        <R>0.28</R>
-        <G>0.3</G>
-        <B>0.35</B>
+        <R>0.58</R>
+        <G>0.62</G>
+        <B>0.68</B>
       </Color3>
     </Properties>
   </Item>
@@ -504,6 +504,227 @@ local function addGymBleacher(position, rotation)
     end
 end
 
+local function addLargeClassroomCeiling(center)
+    local cx, cz = center.X, center.Z
+    createPart("ClassCeiling" .. cx, Vector3.new(56, 0.4, 38),
+        CFrame.new(cx, 12.2, cz),
+        Color3.fromRGB(205, 205, 210), Enum.Material.SmoothPlastic)
+    local crack = createPart("ClassCeilingCrack" .. cx, Vector3.new(0.18, 0.05, 14),
+        CFrame.new(cx + 10, 12.38, cz - 4) * CFrame.Angles(0, math.rad(18), 0),
+        Color3.fromRGB(28, 28, 32), Enum.Material.SmoothPlastic)
+    crack.CanCollide = false
+end
+
+local function addCorridorColumn(id, position)
+    createPart("CorridorColumn" .. id, Vector3.new(1.4, 12, 1.4),
+        CFrame.new(position + Vector3.new(0, 6, 0)),
+        Color3.fromRGB(185, 190, 198), Enum.Material.SmoothPlastic)
+    createPart("CorridorColumnCap" .. id, Vector3.new(2.2, 0.5, 2.2),
+        CFrame.new(position + Vector3.new(0, 12.25, 0)),
+        Color3.fromRGB(170, 175, 185), Enum.Material.SmoothPlastic)
+end
+
+local function addOuterWallWindow(id, position)
+    local win = createPart("OuterWallWindow" .. id, Vector3.new(7, 4.5, 0.2),
+        CFrame.new(position),
+        Color3.fromRGB(175, 220, 255), Enum.Material.Glass)
+    win.Transparency = 0.5
+    win.CanCollide = false
+    local sill = createPart("OuterWallSill" .. id, Vector3.new(7.6, 0.3, 0.3),
+        CFrame.new(position - Vector3.new(0, 2.4, 0)),
+        Color3.fromRGB(210, 215, 220), Enum.Material.SmoothPlastic)
+    sill.CanCollide = false
+end
+
+local function addLargeClassroomWalls(center)
+    local cx, cz = center.X, center.Z
+    addWall("ClassNorthWall" .. cx, Vector3.new(cx, 6, cz + 18), Vector3.new(56, 12, 2))
+    addWall("ClassEastWall" .. cx, Vector3.new(cx + 27, 6, cz), Vector3.new(2, 12, 36))
+    addWall("ClassWestWall" .. cx, Vector3.new(cx - 27, 6, cz), Vector3.new(2, 12, 36))
+    addAreaLightPanel("ClassCeilingLight" .. cx, Vector3.new(cx, 11.2, cz + 4), Vector3.new(28, 0.25, 10))
+    -- 걸레받이 (wainscoting)
+    local wainColor = Color3.fromRGB(148, 136, 122)
+    local wN = createPart("ClassWainscotN" .. cx, Vector3.new(56, 2.8, 0.22), CFrame.new(cx, 1.4, cz + 17.9), wainColor, Enum.Material.SmoothPlastic)
+    wN.CanCollide = false
+    local wE = createPart("ClassWainscotE" .. cx, Vector3.new(0.22, 2.8, 36), CFrame.new(cx + 26.9, 1.4, cz), wainColor, Enum.Material.SmoothPlastic)
+    wE.CanCollide = false
+    local wW = createPart("ClassWainscotW" .. cx, Vector3.new(0.22, 2.8, 36), CFrame.new(cx - 26.9, 1.4, cz), wainColor, Enum.Material.SmoothPlastic)
+    wW.CanCollide = false
+    -- 창문 (동쪽/서쪽 벽)
+    for wI = 0, 1 do
+        local winZ = cz - 8 + wI * 16
+        local winE = createPart("ClassWinE" .. cx .. "_" .. wI, Vector3.new(0.2, 4.5, 7), CFrame.new(cx + 27.1, 7, winZ), Color3.fromRGB(175, 220, 255), Enum.Material.Glass)
+        winE.Transparency = 0.5; winE.CanCollide = false
+        local winW = createPart("ClassWinW" .. cx .. "_" .. wI, Vector3.new(0.2, 4.5, 7), CFrame.new(cx - 27.1, 7, winZ), Color3.fromRGB(175, 220, 255), Enum.Material.Glass)
+        winW.Transparency = 0.5; winW.CanCollide = false
+    end
+end
+
+local function addScienceLabProps(center)
+    local cx, cz = center.X, center.Z
+    for row = 0, 1 do
+        for col = 0, 3 do
+            createPart("LabTable", Vector3.new(5, 0.3, 2.2),
+                CFrame.new(cx - 14 + col * 10, 1.7, cz - 6 + row * 10),
+                Color3.fromRGB(28, 30, 34), Enum.Material.SmoothPlastic)
+        end
+    end
+    for i = 1, 5 do
+        local flask = createPart("LabFlask", Vector3.new(0.5, 0.9, 0.5),
+            CFrame.new(cx - 16 + i * 7, 2.25, cz - 6),
+            Color3.fromRGB(90, 180, 255), Enum.Material.Glass)
+        flask.Transparency = 0.35
+        local glow = Instance.new("PointLight")
+        glow.Color = Color3.fromRGB(90, 180, 255)
+        glow.Brightness = 0.5
+        glow.Range = 5
+        glow.Parent = flask
+    end
+    createPart("SkeletonBody", Vector3.new(1, 5.5, 1),
+        CFrame.new(cx + 24, 3.75, cz + 14),
+        Color3.fromRGB(228, 215, 190), Enum.Material.SmoothPlastic)
+    createPart("SkeletonHead", Vector3.new(1.2, 1.2, 1.2),
+        CFrame.new(cx + 24, 7.1, cz + 14),
+        Color3.fromRGB(228, 215, 190), Enum.Material.SmoothPlastic)
+    createPart("PeriodicTable", Vector3.new(10, 6, 0.18),
+        CFrame.new(cx, 6.5, cz + 17.2),
+        Color3.fromRGB(235, 235, 215), Enum.Material.SmoothPlastic)
+    local brokenFlask = createPart("BrokenFlask", Vector3.new(0.4, 0.1, 0.4),
+        CFrame.new(cx + 8, 0.9, cz + 2),
+        Color3.fromRGB(180, 220, 255), Enum.Material.Glass)
+    brokenFlask.Transparency = 0.2
+    brokenFlask.CanCollide = false
+end
+
+local function addMusicRoomProps(center)
+    local cx, cz = center.X, center.Z
+    for i = 0, 4 do
+        createPart("MusicStandPole", Vector3.new(0.35, 3.5, 0.35),
+            CFrame.new(cx - 18 + i * 9, 2.25, cz - 5),
+            Color3.fromRGB(38, 38, 40), Enum.Material.Metal)
+        createPart("MusicStandDesk", Vector3.new(2.2, 0.12, 1.6),
+            CFrame.new(cx - 18 + i * 9, 4.0, cz - 5),
+            Color3.fromRGB(35, 35, 38), Enum.Material.Metal)
+    end
+    createPart("PianoBody", Vector3.new(5.5, 5, 2.4),
+        CFrame.new(cx - 21, 3.5, cz + 14),
+        Color3.fromRGB(18, 18, 20), Enum.Material.SmoothPlastic)
+    createPart("PianoKeys", Vector3.new(4.8, 0.4, 0.9),
+        CFrame.new(cx - 21, 2.1, cz + 12.7),
+        Color3.fromRGB(245, 245, 245), Enum.Material.SmoothPlastic)
+    createPart("DrumSetBase", Vector3.new(4.5, 1.8, 4),
+        CFrame.new(cx + 18, 1.4, cz + 12),
+        Color3.fromRGB(185, 45, 45), Enum.Material.SmoothPlastic)
+    createPart("Cymbal1", Vector3.new(2.8, 0.12, 2.8),
+        CFrame.new(cx + 18, 3.5, cz + 12),
+        Color3.fromRGB(190, 175, 35), Enum.Material.Metal)
+    createPart("Cymbal2", Vector3.new(2.2, 0.12, 2.2),
+        CFrame.new(cx + 21, 4.0, cz + 13.5),
+        Color3.fromRGB(190, 175, 35), Enum.Material.Metal)
+    createPart("FallenMusicStand", Vector3.new(2.2, 0.12, 1.6),
+        CFrame.new(cx + 4, 0.7, cz - 2) * CFrame.Angles(math.rad(-80), math.rad(20), 0),
+        Color3.fromRGB(35, 35, 38), Enum.Material.Metal)
+end
+
+local function addArtRoomProps(center)
+    local cx, cz = center.X, center.Z
+    for i = 0, 3 do
+        createPart("EaselPost", Vector3.new(0.3, 4.5, 0.3),
+            CFrame.new(cx - 14 + i * 10, 3, cz - 5),
+            Color3.fromRGB(110, 70, 30), Enum.Material.Wood)
+        createPart("EaselCanvas", Vector3.new(3.2, 4, 0.12),
+            CFrame.new(cx - 14 + i * 10, 4.5, cz - 5),
+            Color3.fromRGB(245, 238, 220), Enum.Material.SmoothPlastic)
+    end
+    createPart("ArtSupplyTable", Vector3.new(14, 0.4, 3),
+        CFrame.new(cx - 8, 1.7, cz + 13),
+        Color3.fromRGB(108, 72, 44), Enum.Material.Wood)
+    createPart("PaintSet", Vector3.new(8, 0.5, 1.8),
+        CFrame.new(cx - 8, 2.1, cz + 13),
+        Color3.fromRGB(195, 115, 75), Enum.Material.SmoothPlastic)
+    local splash1 = createPart("PaintSplashR", Vector3.new(3.5, 0.06, 2.8),
+        CFrame.new(cx + 6, 0.88, cz - 7),
+        Color3.fromRGB(220, 70, 70), Enum.Material.Neon)
+    splash1.CanCollide = false
+    local splash2 = createPart("PaintSplashB", Vector3.new(2.8, 0.06, 3),
+        CFrame.new(cx - 10, 0.88, cz + 3),
+        Color3.fromRGB(65, 115, 220), Enum.Material.Neon)
+    splash2.CanCollide = false
+    createPart("LargePainting", Vector3.new(11, 7, 0.18),
+        CFrame.new(cx + 14, 6.5, cz + 17.2),
+        Color3.fromRGB(180, 120, 155), Enum.Material.SmoothPlastic)
+end
+
+local function addBroadcastRoomProps(center)
+    local cx, cz = center.X, center.Z
+    createPart("BroadcastConsole", Vector3.new(20, 1.0, 3.5),
+        CFrame.new(cx, 1.8, cz + 8),
+        Color3.fromRGB(18, 20, 28), Enum.Material.SmoothPlastic)
+    local leds = createPart("ConsoleLEDs", Vector3.new(18, 0.22, 2),
+        CFrame.new(cx, 2.45, cz + 8),
+        Color3.fromRGB(0, 180, 255), Enum.Material.Neon)
+    leds.CanCollide = false
+    for i = 0, 2 do
+        createPart("Monitor", Vector3.new(4, 3, 0.2),
+            CFrame.new(cx - 8 + i * 8, 4.2, cz + 12),
+            Color3.fromRGB(15, 15, 20), Enum.Material.SmoothPlastic)
+        local screenGlow = createPart("MonitorGlow", Vector3.new(3.5, 2.5, 0.16),
+            CFrame.new(cx - 8 + i * 8, 4.2, cz + 11.8),
+            Color3.fromRGB(60, 160, 255), Enum.Material.Neon)
+        screenGlow.CanCollide = false
+    end
+    createPart("CameraTripod", Vector3.new(0.4, 4, 0.4),
+        CFrame.new(cx - 22, 2.5, cz - 3),
+        Color3.fromRGB(38, 38, 40), Enum.Material.Metal)
+    createPart("CameraBody", Vector3.new(1.6, 1.2, 2.4),
+        CFrame.new(cx - 22, 5.1, cz - 3),
+        Color3.fromRGB(22, 22, 25), Enum.Material.SmoothPlastic)
+    local recLight = createPart("RecordingLight", Vector3.new(0.35, 0.35, 0.35),
+        CFrame.new(cx - 22, 5.85, cz - 3),
+        Color3.fromRGB(255, 20, 20), Enum.Material.Neon)
+    recLight.CanCollide = false
+    createPart("TapeBox", Vector3.new(5, 0.6, 3.5),
+        CFrame.new(cx + 22, 0.95, cz - 8),
+        Color3.fromRGB(40, 40, 48), Enum.Material.SmoothPlastic)
+end
+
+local function addHealthRoomProps(center)
+    local cx, cz = center.X, center.Z
+    for i = 0, 2 do
+        createPart("MedBed", Vector3.new(4.5, 0.55, 9),
+            CFrame.new(cx - 16 + i * 16, 1.8, cz + 4),
+            Color3.fromRGB(242, 242, 248), Enum.Material.SmoothPlastic)
+        createPart("MedBedPillow", Vector3.new(3, 0.45, 2),
+            CFrame.new(cx - 16 + i * 16, 2.35, cz + 8.2),
+            Color3.fromRGB(248, 248, 252), Enum.Material.SmoothPlastic)
+        createPart("IVPole", Vector3.new(0.25, 4.5, 0.25),
+            CFrame.new(cx - 16 + i * 16 + 2.5, 3, cz + 7),
+            Color3.fromRGB(165, 175, 185), Enum.Material.Metal)
+        local ivBag = createPart("IVBag", Vector3.new(0.7, 1.1, 0.18),
+            CFrame.new(cx - 16 + i * 16 + 2.5, 5.4, cz + 7),
+            Color3.fromRGB(215, 238, 255), Enum.Material.Glass)
+        ivBag.Transparency = 0.38
+    end
+    createPart("MedCabinet", Vector3.new(5, 6.5, 1.4),
+        CFrame.new(cx - 24, 4.75, cz + 16),
+        Color3.fromRGB(228, 234, 240), Enum.Material.SmoothPlastic)
+    local cabinetGlass = createPart("CabinetGlass", Vector3.new(4.4, 5.6, 0.16),
+        CFrame.new(cx - 24, 4.75, cz + 15.5),
+        Color3.fromRGB(180, 228, 255), Enum.Material.Glass)
+    cabinetGlass.Transparency = 0.25
+    local crossH = createPart("RedCrossH", Vector3.new(5.5, 1.2, 0.15),
+        CFrame.new(cx, 8.5, cz + 17.5),
+        Color3.fromRGB(220, 35, 35), Enum.Material.Neon)
+    crossH.CanCollide = false
+    local crossV = createPart("RedCrossV", Vector3.new(1.2, 5.5, 0.15),
+        CFrame.new(cx, 8.5, cz + 17.4),
+        Color3.fromRGB(220, 35, 35), Enum.Material.Neon)
+    crossV.CanCollide = false
+    createPart("OverturneWheelchair", Vector3.new(3, 1, 3),
+        CFrame.new(cx + 18, 1, cz - 10) * CFrame.Angles(0, math.rad(25), math.rad(-90)),
+        Color3.fromRGB(55, 60, 68), Enum.Material.Metal)
+end
+
 local function addLargeClassroomBlock(center, labelText, color)
     createPart(labelText .. "Floor", Vector3.new(56, 0.16, 38), CFrame.new(center.X, 0.82, center.Z), color, Enum.Material.Tile)
     addDoorMarker(Vector3.new(center.X, 4, center.Z - 20), 0, labelText, color)
@@ -512,6 +733,113 @@ local function addLargeClassroomBlock(center, labelText, color)
         for col = 0, 2 do
             addDesk(Vector3.new(center.X - 16 + col * 16, 1.5, center.Z - 8 + row * 8), (row - col) * 8)
         end
+    end
+end
+
+local function addLandmarkTower(name, position, labelText, color)
+    local tower = createPart(name, Vector3.new(7, 34, 7), CFrame.new(position + Vector3.new(0, 17, 0)), color, Enum.Material.Neon)
+    tower.CanCollide = false
+    addLabelBillboard(tower, labelText, Color3.fromRGB(255, 255, 255))
+
+    local glow = Instance.new("PointLight")
+    glow.Name = name .. "Glow"
+    glow.Color = color
+    glow.Brightness = 2.4
+    glow.Range = 70
+    glow.Shadows = false
+    glow.Parent = tower
+end
+
+local function addLampPost(position, color)
+    local pole = createPart("CampusLampPost", Vector3.new(0.8, 10, 0.8), CFrame.new(position + Vector3.new(0, 5, 0)), Color3.fromRGB(50, 55, 62), Enum.Material.Metal)
+    local lamp = createPart("CampusLampHead", Vector3.new(2.8, 1.2, 2.8), CFrame.new(position + Vector3.new(0, 10.6, 0)), color or Color3.fromRGB(255, 235, 170), Enum.Material.Neon)
+    lamp.CanCollide = false
+
+    local light = Instance.new("PointLight")
+    light.Name = "CampusLampGlow"
+    light.Color = color or Color3.fromRGB(255, 235, 170)
+    light.Brightness = 1.8
+    light.Range = 32
+    light.Shadows = false
+    light.Parent = lamp
+end
+
+local function addBarricade(position, rotation)
+    local base = CFrame.new(position) * CFrame.Angles(0, math.rad(rotation or 0), 0)
+    createPart("WarningBarricadeA", Vector3.new(9, 1.2, 0.8), base * CFrame.new(0, 2.4, 0), colors.warning, Enum.Material.Wood)
+    createPart("WarningBarricadeB", Vector3.new(9, 1.2, 0.8), base * CFrame.new(0, 0.9, 0), Color3.fromRGB(45, 45, 48), Enum.Material.Wood)
+    createPart("WarningBarricadeLegA", Vector3.new(0.7, 3.8, 0.7), base * CFrame.new(-4.2, 1.4, 0), Color3.fromRGB(70, 45, 28), Enum.Material.Wood)
+    createPart("WarningBarricadeLegB", Vector3.new(0.7, 3.8, 0.7), base * CFrame.new(4.2, 1.4, 0), Color3.fromRGB(70, 45, 28), Enum.Material.Wood)
+end
+
+local function addSupplyCrates(position, rotation)
+    local base = CFrame.new(position) * CFrame.Angles(0, math.rad(rotation or 0), 0)
+    createPart("SupplyCrateLarge", Vector3.new(5, 4, 5), base, Color3.fromRGB(115, 82, 45), Enum.Material.Wood)
+    createPart("SupplyCrateSmallA", Vector3.new(3.5, 3, 3.5), base * CFrame.new(4.8, -0.5, 1.2), Color3.fromRGB(130, 96, 55), Enum.Material.Wood)
+    createPart("SupplyCrateSmallB", Vector3.new(3, 2.6, 3), base * CFrame.new(-4.6, -0.7, -1.4), Color3.fromRGB(120, 86, 50), Enum.Material.Wood)
+end
+
+local function addBench(position, rotation)
+    local base = CFrame.new(position) * CFrame.Angles(0, math.rad(rotation or 0), 0)
+    createPart("HallBenchSeat", Vector3.new(9, 0.6, 2.2), base * CFrame.new(0, 2, 0), Color3.fromRGB(100, 70, 45), Enum.Material.Wood)
+    createPart("HallBenchBack", Vector3.new(9, 2.6, 0.5), base * CFrame.new(0, 3, 1.2), Color3.fromRGB(90, 65, 42), Enum.Material.Wood)
+    createPart("HallBenchLegA", Vector3.new(0.6, 2, 0.6), base * CFrame.new(-3.6, 1, -0.5), Color3.fromRGB(45, 45, 48), Enum.Material.Metal)
+    createPart("HallBenchLegB", Vector3.new(0.6, 2, 0.6), base * CFrame.new(3.6, 1, -0.5), Color3.fromRGB(45, 45, 48), Enum.Material.Metal)
+end
+
+local function addDistrictProps()
+    addLandmarkTower("StartWingLandmark", Vector3.new(-52, 0, 22), "시작 구역", Color3.fromRGB(70, 135, 255))
+    addLandmarkTower("NorthWingLandmark", Vector3.new(-185, 0, 120), "북쪽 별관", Color3.fromRGB(150, 95, 255))
+    addLandmarkTower("SouthWingLandmark", Vector3.new(135, 0, -145), "남쪽 별관", Color3.fromRGB(255, 150, 70))
+    addLandmarkTower("GymLandmark", Vector3.new(-260, 0, -145), "체육관", Color3.fromRGB(255, 205, 70))
+    addLandmarkTower("ExitLandmark", Vector3.new(305, 0, 0), "대탈출문", Color3.fromRGB(80, 255, 130))
+
+    for _, pos in ipairs({
+        Vector3.new(-300, 1, 0), Vector3.new(-230, 1, 80), Vector3.new(-230, 1, -80),
+        Vector3.new(-120, 1, 0), Vector3.new(0, 1, 0), Vector3.new(120, 1, 0),
+        Vector3.new(250, 1, 85), Vector3.new(250, 1, -85), Vector3.new(305, 1, 28),
+        Vector3.new(-185, 1, 120), Vector3.new(-40, 1, 120), Vector3.new(125, 1, 120),
+        Vector3.new(-220, 1, -145), Vector3.new(20, 1, -145), Vector3.new(230, 1, -145),
+    }) do
+        addLampPost(pos)
+    end
+
+    for _, info in ipairs({
+        { Vector3.new(-132, 1.7, 18), 12 }, { Vector3.new(-76, 1.7, -16), -8 },
+        { Vector3.new(72, 1.7, 18), 6 }, { Vector3.new(170, 1.7, -20), -15 },
+        { Vector3.new(-215, 1.7, 102), 18 }, { Vector3.new(-112, 1.7, 142), -12 },
+        { Vector3.new(168, 1.7, 103), 8 }, { Vector3.new(245, 1.7, 82), -20 },
+        { Vector3.new(-295, 1.7, -118), 8 }, { Vector3.new(-210, 1.7, -174), -18 },
+        { Vector3.new(84, 1.7, -124), 15 }, { Vector3.new(250, 1.7, -118), -12 },
+    }) do
+        addBarricade(info[1], info[2])
+    end
+
+    for _, info in ipairs({
+        { Vector3.new(-155, 2.2, -28), 8 }, { Vector3.new(-18, 2.2, 84), -12 },
+        { Vector3.new(68, 2.2, -84), 20 }, { Vector3.new(210, 2.2, 32), -8 },
+        { Vector3.new(-280, 2.2, 126), 15 }, { Vector3.new(245, 2.2, 150), -20 },
+        { Vector3.new(-116, 2.2, -180), 5 }, { Vector3.new(185, 2.2, -184), -14 },
+    }) do
+        addSupplyCrates(info[1], info[2])
+    end
+
+    for _, info in ipairs({
+        { Vector3.new(-18, 1, 12), 0 }, { Vector3.new(72, 1, -12), 180 },
+        { Vector3.new(-185, 1, 106), 0 }, { Vector3.new(-95, 1, 106), 0 },
+        { Vector3.new(125, 1, 106), 0 }, { Vector3.new(225, 1, 86), 0 },
+        { Vector3.new(-165, 1, -168), 180 }, { Vector3.new(118, 1, -158), 180 },
+    }) do
+        addBench(info[1], info[2])
+    end
+
+    for _, pos in ipairs({
+        Vector3.new(65, 1, -12), Vector3.new(95, 1, -22), Vector3.new(130, 1, -8),
+        Vector3.new(165, 1, -56), Vector3.new(68, 1, -72), Vector3.new(148, 1, -76),
+        Vector3.new(-308, 1, 164), Vector3.new(-286, 1, 190), Vector3.new(292, 1, 158),
+        Vector3.new(318, 1, 186), Vector3.new(-310, 1, -188), Vector3.new(310, 1, -190),
+    }) do
+        addTree(pos, 0.9 + (math.abs(pos.X + pos.Z) % 4) * 0.12)
     end
 end
 
@@ -565,6 +893,48 @@ local function buildMap()
     addWall("EastOuterWallTop", Vector3.new(350, 6, 125), Vector3.new(2, 12, 210))
     addWall("EastOuterWallBottom", Vector3.new(350, 6, -125), Vector3.new(2, 12, 210))
 
+    -- 복도 천장
+    createPart("MainCorridorCeiling", Vector3.new(640, 0.4, 16), CFrame.new(0, 12.2, 0), Color3.fromRGB(195, 198, 205), Enum.Material.SmoothPlastic)
+    createPart("NorthCorridorCeiling", Vector3.new(520, 0.4, 14), CFrame.new(20, 12.2, 120), Color3.fromRGB(195, 198, 205), Enum.Material.SmoothPlastic)
+    createPart("SouthCorridorCeiling", Vector3.new(520, 0.4, 14), CFrame.new(20, 12.2, -145), Color3.fromRGB(195, 198, 205), Enum.Material.SmoothPlastic)
+    createPart("WestConnectorCeiling", Vector3.new(14, 0.4, 248), CFrame.new(-230, 12.2, 0), Color3.fromRGB(195, 198, 205), Enum.Material.SmoothPlastic)
+    createPart("EastConnectorCeiling", Vector3.new(14, 0.4, 248), CFrame.new(250, 12.2, 0), Color3.fromRGB(195, 198, 205), Enum.Material.SmoothPlastic)
+    createPart("GymCeiling", Vector3.new(86, 0.4, 58), CFrame.new(-260, 12.2, -145), Color3.fromRGB(195, 198, 205), Enum.Material.SmoothPlastic)
+
+    -- 복도 기둥 (주 복도 양쪽)
+    for colI = 0, 5 do
+        local colX = -250 + colI * 100
+        addCorridorColumn("MainN" .. colI, Vector3.new(colX, 0, 7))
+        addCorridorColumn("MainS" .. colI, Vector3.new(colX, 0, -7))
+    end
+    -- 북쪽 별관 복도 기둥
+    for colI = 0, 4 do
+        local colX = -200 + colI * 100
+        addCorridorColumn("NorthW" .. colI, Vector3.new(colX, 0, 127))
+        addCorridorColumn("NorthE" .. colI, Vector3.new(colX, 0, 113))
+    end
+    -- 남쪽 별관 복도 기둥
+    for colI = 0, 4 do
+        local colX = -200 + colI * 100
+        addCorridorColumn("SouthW" .. colI, Vector3.new(colX, 0, -138))
+        addCorridorColumn("SouthE" .. colI, Vector3.new(colX, 0, -152))
+    end
+
+    -- 북쪽 외벽 창문
+    for winI = 0, 10 do
+        addOuterWallWindow("North" .. winI, Vector3.new(-275 + winI * 55, 6.5, 229.3))
+    end
+    -- 남쪽 외벽 창문
+    for winI = 0, 10 do
+        addOuterWallWindow("South" .. winI, Vector3.new(-275 + winI * 55, 6.5, -229.3))
+    end
+    -- 외벽 내측 걸레받이
+    local wainColor2 = Color3.fromRGB(148, 136, 122)
+    local outerWainN = createPart("OuterWainscotN", Vector3.new(700, 2.8, 0.22), CFrame.new(0, 1.4, 229.1), wainColor2, Enum.Material.SmoothPlastic)
+    outerWainN.CanCollide = false
+    local outerWainS = createPart("OuterWainscotS", Vector3.new(700, 2.8, 0.22), CFrame.new(0, 1.4, -229.1), wainColor2, Enum.Material.SmoothPlastic)
+    outerWainS.CanCollide = false
+
     addWall("StartRoomNorthLeft", Vector3.new(-57, 6, 12), Vector3.new(12, 12, 2))
     addWall("StartRoomNorthRight", Vector3.new(-35, 6, 12), Vector3.new(12, 12, 2))
     addWall("StartRoomWest", Vector3.new(-63, 6, 25), Vector3.new(2, 12, 28))
@@ -597,18 +967,44 @@ local function buildMap()
 
     addBlackboard(Vector3.new(-46, 4.7, 12.9), 0, "퓨즈 3개")
     addBlackboard(Vector3.new(28, 4.7, 24.1), 180, "괴물을 피해!")
+    addDistrictProps()
 
     addLargeClassroomBlock(Vector3.new(-185, 0, 135), "과학실", Color3.fromRGB(54, 115, 95))
+    addLargeClassroomWalls(Vector3.new(-185, 0, 135))
+    addLargeClassroomCeiling(Vector3.new(-185, 0, 135))
+    addScienceLabProps(Vector3.new(-185, 0, 135))
+
     addLargeClassroomBlock(Vector3.new(-95, 0, 135), "음악실", Color3.fromRGB(105, 74, 135))
+    addLargeClassroomWalls(Vector3.new(-95, 0, 135))
+    addLargeClassroomCeiling(Vector3.new(-95, 0, 135))
+    addMusicRoomProps(Vector3.new(-95, 0, 135))
+
     addLargeClassroomBlock(Vector3.new(125, 0, 135), "미술실", Color3.fromRGB(155, 95, 70))
+    addLargeClassroomWalls(Vector3.new(125, 0, 135))
+    addLargeClassroomCeiling(Vector3.new(125, 0, 135))
+    addArtRoomProps(Vector3.new(125, 0, 135))
+
     addLargeClassroomBlock(Vector3.new(225, 0, 110), "방송실", Color3.fromRGB(70, 120, 155))
+    addLargeClassroomWalls(Vector3.new(225, 0, 110))
+    addLargeClassroomCeiling(Vector3.new(225, 0, 110))
+    addBroadcastRoomProps(Vector3.new(225, 0, 110))
+
     addLargeClassroomBlock(Vector3.new(-165, 0, -145), "보건실", Color3.fromRGB(130, 80, 100))
+    addLargeClassroomWalls(Vector3.new(-165, 0, -145))
+    addLargeClassroomCeiling(Vector3.new(-165, 0, -145))
+    addHealthRoomProps(Vector3.new(-165, 0, -145))
 
     createPart("GymFloor", Vector3.new(86, 0.16, 58), CFrame.new(-260, 0.82, -145), Color3.fromRGB(88, 96, 108), Enum.Material.WoodPlanks)
+    addWall("GymSouthWall", Vector3.new(-260, 6, -174), Vector3.new(86, 12, 2))
+    addWall("GymEastWall", Vector3.new(-217, 6, -158), Vector3.new(2, 12, 32))
+    addWall("GymWestWall", Vector3.new(-303, 6, -158), Vector3.new(2, 12, 32))
     addGymBleacher(Vector3.new(-290, 1, -168), 0)
     createPart("BasketballCourtLine", Vector3.new(62, 0.1, 2), CFrame.new(-260, 1, -145), Color3.fromRGB(255, 235, 130), Enum.Material.Neon)
     createPart("BasketballHoopA", Vector3.new(6, 6, 0.5), CFrame.new(-300, 6, -145), Color3.fromRGB(255, 135, 45), Enum.Material.Neon)
     createPart("BasketballHoopB", Vector3.new(6, 6, 0.5), CFrame.new(-220, 6, -145), Color3.fromRGB(255, 135, 45), Enum.Material.Neon)
+    createPart("GymWallCrack", Vector3.new(0.14, 6, 3),
+        CFrame.new(-303.1, 6, -164) * CFrame.Angles(0, 0, math.rad(5)),
+        Color3.fromRGB(28, 28, 32), Enum.Material.SmoothPlastic).CanCollide = false
 
     createPart("OutdoorYard", Vector3.new(120, 0.12, 70), CFrame.new(115, 0.9, -35), Color3.fromRGB(70, 135, 70), Enum.Material.Grass)
     addTree(Vector3.new(80, 1, -50), 1.2)
@@ -638,9 +1034,57 @@ local function buildMap()
     addLocker(Vector3.new(20, 4, 9), 180)
     addLocker(Vector3.new(44, 4, -8), 0)
 
+    -- 북쪽 별관 복도 사물함 줄 (z=124 = 북쪽 복도 안쪽 벽)
+    for i = 1, 6 do
+        addLocker(Vector3.new(-220 + (i - 1) * 72, 4, 124), 180)
+    end
+
+    -- 남쪽 별관 복도 사물함 줄 (z=-149 = 남쪽 복도 안쪽 벽)
+    for i = 1, 5 do
+        addLocker(Vector3.new(-185 + (i - 1) * 85, 4, -149), 0)
+    end
+
+    -- 쓰러진 사물함 (분위기용)
+    createPart("FallenLockerNA", Vector3.new(3, 7, 2.2),
+        CFrame.new(-78, 1.5, 119) * CFrame.Angles(0, math.rad(12), math.rad(-88)),
+        Color3.fromRGB(35, 70, 95), Enum.Material.Metal)
+    createPart("FallenLockerNB", Vector3.new(3, 7, 2.2),
+        CFrame.new(68, 1.5, 122) * CFrame.Angles(0, math.rad(-8), math.rad(85)),
+        Color3.fromRGB(35, 70, 95), Enum.Material.Metal)
+    createPart("FallenLockerSA", Vector3.new(3, 7, 2.2),
+        CFrame.new(-55, 1.5, -141) * CFrame.Angles(0, math.rad(5), math.rad(88)),
+        Color3.fromRGB(35, 70, 95), Enum.Material.Metal)
+    createPart("FallenLockerSB", Vector3.new(3, 7, 2.2),
+        CFrame.new(145, 1.5, -138) * CFrame.Angles(0, math.rad(-14), math.rad(-86)),
+        Color3.fromRGB(35, 70, 95), Enum.Material.Metal)
+
     addNoiseTrap("BrokenGlassTrapA", Vector3.new(-18, 0.8, -4), Vector3.new(9, 0.12, 4))
     addNoiseTrap("BrokenGlassTrapB", Vector3.new(24, 0.8, 8), Vector3.new(8, 0.12, 4))
     addNoiseTrap("BrokenGlassTrapC", Vector3.new(44, 0.8, -18), Vector3.new(7, 0.12, 5))
+    -- 북쪽 별관 복도 깨진 유리
+    addNoiseTrap("BrokenGlassNorthA", Vector3.new(-155, 0.65, 118), Vector3.new(10, 0.1, 5))
+    addNoiseTrap("BrokenGlassNorthB", Vector3.new(30, 0.65, 122), Vector3.new(9, 0.1, 4))
+    addNoiseTrap("BrokenGlassNorthC", Vector3.new(175, 0.65, 119), Vector3.new(8, 0.1, 5))
+    -- 남쪽 별관 복도 깨진 유리
+    addNoiseTrap("BrokenGlassSouthA", Vector3.new(-80, 0.65, -142), Vector3.new(9, 0.1, 5))
+    addNoiseTrap("BrokenGlassSouthB", Vector3.new(80, 0.65, -141), Vector3.new(10, 0.1, 4))
+
+    -- 별관 복도 추가 장식 (쓰러진 의자, 서류 더미)
+    for i = 0, 3 do
+        addChair(Vector3.new(-200 + i * 85, 1.2, 116), -45 + i * 30)
+    end
+    for i = 0, 2 do
+        addChair(Vector3.new(-150 + i * 100, 1.2, -138), 15 + i * 40)
+    end
+    createPart("ScatteredPapersN1", Vector3.new(12, 0.06, 8),
+        CFrame.new(-120, 0.72, 120) * CFrame.Angles(0, math.rad(12), 0),
+        Color3.fromRGB(240, 235, 220), Enum.Material.SmoothPlastic).CanCollide = false
+    createPart("ScatteredPapersN2", Vector3.new(10, 0.06, 6),
+        CFrame.new(60, 0.72, 122) * CFrame.Angles(0, math.rad(-8), 0),
+        Color3.fromRGB(235, 230, 215), Enum.Material.SmoothPlastic).CanCollide = false
+    createPart("ScatteredPapersS1", Vector3.new(11, 0.06, 7),
+        CFrame.new(-20, 0.72, -143) * CFrame.Angles(0, math.rad(20), 0),
+        Color3.fromRGB(240, 235, 220), Enum.Material.SmoothPlastic).CanCollide = false
 
     createPart("LowSlideObstacle", Vector3.new(8, 2, 1.2), CFrame.new(0, 1.5, -6), colors.warning, Enum.Material.Wood)
     createPart("LowSlideObstacle2", Vector3.new(7, 2, 1.2), CFrame.new(30, 1.5, 6), colors.warning, Enum.Material.Wood)
@@ -1055,12 +1499,12 @@ local function createGhost()
 
     local body = createPart("GhostBody", Vector3.new(4.6, 5.4, 2.4), CFrame.new(base + Vector3.new(0, -0.6, 0)), colors.ghost, Enum.Material.ForceField, ghost)
     body.Shape = Enum.PartType.Ball
-    body.Transparency = 0.38
+    body.Transparency = 0.15
     body.CanCollide = false
 
     local head = createPart("GhostHead", Vector3.new(3.2, 3.2, 3.2), CFrame.new(base + Vector3.new(0, 2.4, 0)), Color3.fromRGB(225, 250, 255), Enum.Material.ForceField, ghost)
     head.Shape = Enum.PartType.Ball
-    head.Transparency = 0.22
+    head.Transparency = 0.05
     head.CanCollide = false
 
     local hairBack = createPart("GhostHairBack", Vector3.new(3.8, 3.8, 0.55), CFrame.new(base + Vector3.new(0, 1.6, 1.15)), Color3.fromRGB(22, 28, 42), Enum.Material.SmoothPlastic, ghost)
@@ -1073,9 +1517,9 @@ local function createGhost()
         strand.CanCollide = false
     end
 
-    local eyeLeft = createPart("GhostEyeLeft", Vector3.new(0.38, 0.62, 0.16), CFrame.new(base + Vector3.new(-0.62, 2.55, -1.55)), Color3.fromRGB(30, 45, 70), Enum.Material.Neon, ghost)
+    local eyeLeft = createPart("GhostEyeLeft", Vector3.new(0.38, 0.62, 0.16), CFrame.new(base + Vector3.new(-0.62, 2.55, -1.55)), Color3.fromRGB(80, 200, 255), Enum.Material.Neon, ghost)
     eyeLeft.CanCollide = false
-    local eyeRight = createPart("GhostEyeRight", Vector3.new(0.38, 0.62, 0.16), CFrame.new(base + Vector3.new(0.62, 2.55, -1.55)), Color3.fromRGB(30, 45, 70), Enum.Material.Neon, ghost)
+    local eyeRight = createPart("GhostEyeRight", Vector3.new(0.38, 0.62, 0.16), CFrame.new(base + Vector3.new(0.62, 2.55, -1.55)), Color3.fromRGB(80, 200, 255), Enum.Material.Neon, ghost)
     eyeRight.CanCollide = false
     local tearLeft = createPart("GhostTearLeft", Vector3.new(0.16, 1.2, 0.1), CFrame.new(base + Vector3.new(-0.58, 1.75, -1.62)), colors.ghostBlue, Enum.Material.Neon, ghost)
     tearLeft.Transparency = 0.2
@@ -1090,34 +1534,44 @@ local function createGhost()
         tail.CanCollide = false
     end
 
+    -- 가까이 있을 때 주변을 밝히는 메인 글로우
     local glow = Instance.new("PointLight")
     glow.Name = "GhostColdGlow"
     glow.Color = Color3.fromRGB(170, 235, 255)
-    glow.Brightness = 2.2
-    glow.Range = 26
-    glow.Shadows = false
+    glow.Brightness = 5.0
+    glow.Range = 48
+    glow.Shadows = true
     glow.Parent = root
+
+    -- 멀리서도 위치를 알 수 있는 원거리 비컨 빛
+    local beacon = Instance.new("PointLight")
+    beacon.Name = "GhostBeacon"
+    beacon.Color = Color3.fromRGB(120, 210, 255)
+    beacon.Brightness = 1.8
+    beacon.Range = 80
+    beacon.Shadows = false
+    beacon.Parent = head
 
     local mist = Instance.new("ParticleEmitter")
     mist.Name = "GhostMist"
     mist.Color = ColorSequence.new(Color3.fromRGB(205, 245, 255), Color3.fromRGB(90, 170, 255))
-    mist.LightEmission = 0.55
-    mist.Rate = 16
-    mist.Lifetime = NumberRange.new(1.8, 3.2)
-    mist.Speed = NumberRange.new(0.4, 1.4)
-    mist.SpreadAngle = Vector2.new(30, 80)
+    mist.LightEmission = 0.88
+    mist.Rate = 32
+    mist.Lifetime = NumberRange.new(2.0, 4.0)
+    mist.Speed = NumberRange.new(0.5, 1.8)
+    mist.SpreadAngle = Vector2.new(40, 90)
     mist.Transparency = NumberSequence.new({
-        NumberSequenceKeypoint.new(0, 0.35),
-        NumberSequenceKeypoint.new(0.55, 0.68),
+        NumberSequenceKeypoint.new(0, 0.20),
+        NumberSequenceKeypoint.new(0.55, 0.60),
         NumberSequenceKeypoint.new(1, 1),
     })
     mist.Size = NumberSequence.new({
-        NumberSequenceKeypoint.new(0, 1.2),
-        NumberSequenceKeypoint.new(1, 3.4),
+        NumberSequenceKeypoint.new(0, 2.0),
+        NumberSequenceKeypoint.new(1, 5.5),
     })
     mist.Parent = root
 
-    addLabelBillboard(root, "도서관 귀신", Color3.fromRGB(205, 245, 255))
+    addLabelBillboard(root, "도서관 귀신", Color3.fromRGB(160, 240, 255))
 
     return ghost
 end
@@ -1951,112 +2405,341 @@ updateSlideLabel()
       </Properties>
       <Item class="Part" referent="11">
         <Properties>
-          <string name="Name">편집화면_프리뷰_안내</string>
+          <string name="Name">학교_기반바닥</string>
           <bool name="Anchored">true</bool>
-          <bool name="CanCollide">false</bool>
-          <Color3uint8 name="Color3uint8">1733593</Color3uint8>
+          <Color3uint8 name="Color3uint8">5396321</Color3uint8>
           <Vector3 name="Position">
             <X>0</X>
-            <Y>16</Y>
-            <Z>-236</Z>
+            <Y>-1</Y>
+            <Z>0</Z>
           </Vector3>
           <Vector3 name="size">
-            <X>44</X>
-            <Y>1</Y>
-            <Z>4</Z>
+            <X>700</X>
+            <Y>2</Y>
+            <Z>460</Z>
           </Vector3>
         </Properties>
       </Item>
       <Item class="Part" referent="12">
         <Properties>
-          <string name="Name">학교_바닥</string>
+          <string name="Name">중앙복도_표시</string>
           <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">6054249</Color3uint8>
+          <bool name="CanCollide">false</bool>
+          <Color3uint8 name="Color3uint8">3712767</Color3uint8>
+          <token name="Material">288</token>
           <Vector3 name="Position">
             <X>0</X>
-            <Y>0</Y>
+            <Y>1.5</Y>
             <Z>0</Z>
           </Vector3>
           <Vector3 name="size">
-            <X>700</X>
-            <Y>1</Y>
-            <Z>460</Z>
+            <X>640</X>
+            <Y>3</Y>
+            <Z>14</Z>
           </Vector3>
         </Properties>
       </Item>
       <Item class="Part" referent="13">
         <Properties>
-          <string name="Name">복도_바닥</string>
+          <string name="Name">북쪽복도_표시</string>
           <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">5073812</Color3uint8>
+          <bool name="CanCollide">false</bool>
+          <Color3uint8 name="Color3uint8">3704288</Color3uint8>
+          <token name="Material">288</token>
           <Vector3 name="Position">
-            <X>0</X>
-            <Y>0.7</Y>
-            <Z>0</Z>
+            <X>20</X>
+            <Y>1.5</Y>
+            <Z>120</Z>
           </Vector3>
           <Vector3 name="size">
-            <X>640</X>
-            <Y>0.2</Y>
-            <Z>16</Z>
+            <X>520</X>
+            <Y>3</Y>
+            <Z>14</Z>
           </Vector3>
         </Properties>
       </Item>
       <Item class="Part" referent="14">
         <Properties>
-          <string name="Name">도서관_바닥</string>
+          <string name="Name">남쪽복도_표시</string>
           <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">6047628</Color3uint8>
+          <bool name="CanCollide">false</bool>
+          <Color3uint8 name="Color3uint8">14715950</Color3uint8>
+          <token name="Material">288</token>
           <Vector3 name="Position">
-            <X>-12</X>
-            <Y>0.8</Y>
-            <Z>31</Z>
+            <X>20</X>
+            <Y>1.5</Y>
+            <Z>-145</Z>
           </Vector3>
           <Vector3 name="size">
-            <X>32</X>
-            <Y>0.2</Y>
-            <Z>20</Z>
+            <X>520</X>
+            <Y>3</Y>
+            <Z>14</Z>
           </Vector3>
         </Properties>
       </Item>
       <Item class="Part" referent="15">
         <Properties>
-          <string name="Name">급식실_바닥</string>
+          <string name="Name">서쪽연결_표시</string>
           <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">9201229</Color3uint8>
+          <bool name="CanCollide">false</bool>
+          <Color3uint8 name="Color3uint8">3061984</Color3uint8>
+          <token name="Material">288</token>
           <Vector3 name="Position">
-            <X>24</X>
-            <Y>0.8</Y>
-            <Z>-31</Z>
+            <X>-230</X>
+            <Y>1.5</Y>
+            <Z>0</Z>
           </Vector3>
           <Vector3 name="size">
-            <X>34</X>
-            <Y>0.2</Y>
-            <Z>20</Z>
+            <X>14</X>
+            <Y>3</Y>
+            <Z>260</Z>
           </Vector3>
         </Properties>
       </Item>
       <Item class="Part" referent="16">
         <Properties>
-          <string name="Name">발전기실_바닥</string>
+          <string name="Name">동쪽연결_표시</string>
           <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">3704237</Color3uint8>
+          <bool name="CanCollide">false</bool>
+          <Color3uint8 name="Color3uint8">3061984</Color3uint8>
+          <token name="Material">288</token>
           <Vector3 name="Position">
-            <X>49</X>
-            <Y>0.9</Y>
-            <Z>-26</Z>
+            <X>250</X>
+            <Y>1.5</Y>
+            <Z>0</Z>
           </Vector3>
           <Vector3 name="size">
-            <X>20</X>
-            <Y>0.2</Y>
-            <Z>12</Z>
+            <X>14</X>
+            <Y>3</Y>
+            <Z>260</Z>
           </Vector3>
         </Properties>
       </Item>
       <Item class="Part" referent="17">
         <Properties>
-          <string name="Name">북쪽_외벽</string>
+          <string name="Name">과학실_구역</string>
           <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">9212313</Color3uint8>
+          <bool name="CanCollide">false</bool>
+          <Color3uint8 name="Color3uint8">3061893</Color3uint8>
+          <token name="Material">288</token>
+          <Vector3 name="Position">
+            <X>-185</X>
+            <Y>2.5</Y>
+            <Z>135</Z>
+          </Vector3>
+          <Vector3 name="size">
+            <X>56</X>
+            <Y>5</Y>
+            <Z>38</Z>
+          </Vector3>
+          <float name="Transparency">0.3</float>
+        </Properties>
+      </Item>
+      <Item class="Part" referent="18">
+        <Properties>
+          <string name="Name">음악실_구역</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <Color3uint8 name="Color3uint8">9717728</Color3uint8>
+          <token name="Material">288</token>
+          <Vector3 name="Position">
+            <X>-95</X>
+            <Y>2.5</Y>
+            <Z>135</Z>
+          </Vector3>
+          <Vector3 name="size">
+            <X>56</X>
+            <Y>5</Y>
+            <Z>38</Z>
+          </Vector3>
+          <float name="Transparency">0.3</float>
+        </Properties>
+      </Item>
+      <Item class="Part" referent="19">
+        <Properties>
+          <string name="Name">미술실_구역</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <Color3uint8 name="Color3uint8">14709550</Color3uint8>
+          <token name="Material">288</token>
+          <Vector3 name="Position">
+            <X>125</X>
+            <Y>2.5</Y>
+            <Z>135</Z>
+          </Vector3>
+          <Vector3 name="size">
+            <X>56</X>
+            <Y>5</Y>
+            <Z>38</Z>
+          </Vector3>
+          <float name="Transparency">0.3</float>
+        </Properties>
+      </Item>
+      <Item class="Part" referent="20">
+        <Properties>
+          <string name="Name">방송실_구역</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <Color3uint8 name="Color3uint8">3704288</Color3uint8>
+          <token name="Material">288</token>
+          <Vector3 name="Position">
+            <X>225</X>
+            <Y>2.5</Y>
+            <Z>110</Z>
+          </Vector3>
+          <Vector3 name="size">
+            <X>56</X>
+            <Y>5</Y>
+            <Z>38</Z>
+          </Vector3>
+          <float name="Transparency">0.3</float>
+        </Properties>
+      </Item>
+      <Item class="Part" referent="21">
+        <Properties>
+          <string name="Name">보건실_구역</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <Color3uint8 name="Color3uint8">14696563</Color3uint8>
+          <token name="Material">288</token>
+          <Vector3 name="Position">
+            <X>-165</X>
+            <Y>2.5</Y>
+            <Z>-145</Z>
+          </Vector3>
+          <Vector3 name="size">
+            <X>56</X>
+            <Y>5</Y>
+            <Z>38</Z>
+          </Vector3>
+          <float name="Transparency">0.3</float>
+        </Properties>
+      </Item>
+      <Item class="Part" referent="22">
+        <Properties>
+          <string name="Name">체육관_구역</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <Color3uint8 name="Color3uint8">7045286</Color3uint8>
+          <token name="Material">288</token>
+          <Vector3 name="Position">
+            <X>-260</X>
+            <Y>2.5</Y>
+            <Z>-145</Z>
+          </Vector3>
+          <Vector3 name="size">
+            <X>86</X>
+            <Y>5</Y>
+            <Z>58</Z>
+          </Vector3>
+          <float name="Transparency">0.3</float>
+        </Properties>
+      </Item>
+      <Item class="Part" referent="23">
+        <Properties>
+          <string name="Name">운동장_구역</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <Color3uint8 name="Color3uint8">3714368</Color3uint8>
+          <token name="Material">288</token>
+          <Vector3 name="Position">
+            <X>115</X>
+            <Y>2.5</Y>
+            <Z>-35</Z>
+          </Vector3>
+          <Vector3 name="size">
+            <X>120</X>
+            <Y>5</Y>
+            <Z>70</Z>
+          </Vector3>
+          <float name="Transparency">0.3</float>
+        </Properties>
+      </Item>
+      <Item class="Part" referent="24">
+        <Properties>
+          <string name="Name">도서관_구역</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <Color3uint8 name="Color3uint8">8734655</Color3uint8>
+          <token name="Material">288</token>
+          <Vector3 name="Position">
+            <X>-12</X>
+            <Y>2</Y>
+            <Z>31</Z>
+          </Vector3>
+          <Vector3 name="size">
+            <X>32</X>
+            <Y>4</Y>
+            <Z>20</Z>
+          </Vector3>
+          <float name="Transparency">0.3</float>
+        </Properties>
+      </Item>
+      <Item class="Part" referent="25">
+        <Properties>
+          <string name="Name">급식실_구역</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <Color3uint8 name="Color3uint8">12089912</Color3uint8>
+          <token name="Material">288</token>
+          <Vector3 name="Position">
+            <X>24</X>
+            <Y>2</Y>
+            <Z>-31</Z>
+          </Vector3>
+          <Vector3 name="size">
+            <X>34</X>
+            <Y>4</Y>
+            <Z>20</Z>
+          </Vector3>
+          <float name="Transparency">0.3</float>
+        </Properties>
+      </Item>
+      <Item class="Part" referent="26">
+        <Properties>
+          <string name="Name">발전기실_구역</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <Color3uint8 name="Color3uint8">3710688</Color3uint8>
+          <token name="Material">288</token>
+          <Vector3 name="Position">
+            <X>230</X>
+            <Y>2</Y>
+            <Z>-145</Z>
+          </Vector3>
+          <Vector3 name="size">
+            <X>52</X>
+            <Y>4</Y>
+            <Z>36</Z>
+          </Vector3>
+          <float name="Transparency">0.3</float>
+        </Properties>
+      </Item>
+      <Item class="Part" referent="27">
+        <Properties>
+          <string name="Name">시작교실_구역</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <Color3uint8 name="Color3uint8">4687328</Color3uint8>
+          <token name="Material">288</token>
+          <Vector3 name="Position">
+            <X>-46</X>
+            <Y>2</Y>
+            <Z>25</Z>
+          </Vector3>
+          <Vector3 name="size">
+            <X>36</X>
+            <Y>4</Y>
+            <Z>20</Z>
+          </Vector3>
+          <float name="Transparency">0.3</float>
+        </Properties>
+      </Item>
+      <Item class="Part" referent="28">
+        <Properties>
+          <string name="Name">북쪽외벽</string>
+          <bool name="Anchored">true</bool>
+          <Color3uint8 name="Color3uint8">7567493</Color3uint8>
           <Vector3 name="Position">
             <X>0</X>
             <Y>6</Y>
@@ -2069,11 +2752,11 @@ updateSlideLabel()
           </Vector3>
         </Properties>
       </Item>
-      <Item class="Part" referent="18">
+      <Item class="Part" referent="29">
         <Properties>
-          <string name="Name">남쪽_외벽</string>
+          <string name="Name">남쪽외벽</string>
           <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">9212313</Color3uint8>
+          <Color3uint8 name="Color3uint8">7567493</Color3uint8>
           <Vector3 name="Position">
             <X>0</X>
             <Y>6</Y>
@@ -2086,11 +2769,11 @@ updateSlideLabel()
           </Vector3>
         </Properties>
       </Item>
-      <Item class="Part" referent="19">
+      <Item class="Part" referent="30">
         <Properties>
-          <string name="Name">서쪽_외벽</string>
+          <string name="Name">서쪽외벽</string>
           <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">9212313</Color3uint8>
+          <Color3uint8 name="Color3uint8">7567493</Color3uint8>
           <Vector3 name="Position">
             <X>-350</X>
             <Y>6</Y>
@@ -2103,11 +2786,11 @@ updateSlideLabel()
           </Vector3>
         </Properties>
       </Item>
-      <Item class="Part" referent="20">
+      <Item class="Part" referent="31">
         <Properties>
-          <string name="Name">동쪽_외벽_위</string>
+          <string name="Name">동쪽외벽_위</string>
           <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">9212313</Color3uint8>
+          <Color3uint8 name="Color3uint8">7567493</Color3uint8>
           <Vector3 name="Position">
             <X>350</X>
             <Y>6</Y>
@@ -2116,15 +2799,15 @@ updateSlideLabel()
           <Vector3 name="size">
             <X>2</X>
             <Y>12</Y>
-            <Z>28</Z>
+            <Z>210</Z>
           </Vector3>
         </Properties>
       </Item>
-      <Item class="Part" referent="21">
+      <Item class="Part" referent="32">
         <Properties>
-          <string name="Name">동쪽_외벽_아래</string>
+          <string name="Name">동쪽외벽_아래</string>
           <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">9212313</Color3uint8>
+          <Color3uint8 name="Color3uint8">7567493</Color3uint8>
           <Vector3 name="Position">
             <X>350</X>
             <Y>6</Y>
@@ -2137,1008 +2820,600 @@ updateSlideLabel()
           </Vector3>
         </Properties>
       </Item>
-      <Item class="Part" referent="22">
-        <Properties>
-          <string name="Name">시작교실_벽_왼쪽</string>
-          <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">9212313</Color3uint8>
-          <Vector3 name="Position">
-            <X>-57</X>
-            <Y>6</Y>
-            <Z>12</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>12</X>
-            <Y>12</Y>
-            <Z>2</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="23">
-        <Properties>
-          <string name="Name">시작교실_벽_오른쪽</string>
-          <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">9212313</Color3uint8>
-          <Vector3 name="Position">
-            <X>-35</X>
-            <Y>6</Y>
-            <Z>12</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>12</X>
-            <Y>12</Y>
-            <Z>2</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="24">
-        <Properties>
-          <string name="Name">시작교실_서쪽벽</string>
-          <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">9212313</Color3uint8>
-          <Vector3 name="Position">
-            <X>-63</X>
-            <Y>6</Y>
-            <Z>25</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>2</X>
-            <Y>12</Y>
-            <Z>28</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="25">
-        <Properties>
-          <string name="Name">시작교실_동쪽벽</string>
-          <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">9212313</Color3uint8>
-          <Vector3 name="Position">
-            <X>-29</X>
-            <Y>6</Y>
-            <Z>25</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>2</X>
-            <Y>12</Y>
-            <Z>28</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="26">
-        <Properties>
-          <string name="Name">도서관_벽</string>
-          <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">9212313</Color3uint8>
-          <Vector3 name="Position">
-            <X>-8</X>
-            <Y>6</Y>
-            <Z>25</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>24</X>
-            <Y>12</Y>
-            <Z>2</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="27">
-        <Properties>
-          <string name="Name">교실B_벽</string>
-          <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">9212313</Color3uint8>
-          <Vector3 name="Position">
-            <X>28</X>
-            <Y>6</Y>
-            <Z>25</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>24</X>
-            <Y>12</Y>
-            <Z>2</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="28">
-        <Properties>
-          <string name="Name">급식실_벽</string>
-          <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">9212313</Color3uint8>
-          <Vector3 name="Position">
-            <X>16</X>
-            <Y>6</Y>
-            <Z>-25</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>36</X>
-            <Y>12</Y>
-            <Z>2</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="29">
-        <Properties>
-          <string name="Name">파란_안내선_1</string>
-          <bool name="Anchored">true</bool>
-          <bool name="CanCollide">false</bool>
-          <Color3uint8 name="Color3uint8">55807</Color3uint8>
-          <Vector3 name="Position">
-            <X>-45</X>
-            <Y>1</Y>
-            <Z>0</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>18</X>
-            <Y>0.2</Y>
-            <Z>1.1</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="30">
-        <Properties>
-          <string name="Name">파란_안내선_2</string>
-          <bool name="Anchored">true</bool>
-          <bool name="CanCollide">false</bool>
-          <Color3uint8 name="Color3uint8">55807</Color3uint8>
-          <Vector3 name="Position">
-            <X>-20</X>
-            <Y>1</Y>
-            <Z>0</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>18</X>
-            <Y>0.2</Y>
-            <Z>1.1</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="31">
-        <Properties>
-          <string name="Name">파란_안내선_3</string>
-          <bool name="Anchored">true</bool>
-          <bool name="CanCollide">false</bool>
-          <Color3uint8 name="Color3uint8">55807</Color3uint8>
-          <Vector3 name="Position">
-            <X>5</X>
-            <Y>1</Y>
-            <Z>0</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>18</X>
-            <Y>0.2</Y>
-            <Z>1.1</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="32">
-        <Properties>
-          <string name="Name">초록_탈출선</string>
-          <bool name="Anchored">true</bool>
-          <bool name="CanCollide">false</bool>
-          <Color3uint8 name="Color3uint8">3407705</Color3uint8>
-          <Vector3 name="Position">
-            <X>47</X>
-            <Y>1</Y>
-            <Z>0</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>20</X>
-            <Y>0.2</Y>
-            <Z>1.2</Z>
-          </Vector3>
-        </Properties>
-      </Item>
       <Item class="Part" referent="33">
         <Properties>
-          <string name="Name">메인_표지판_부서진학교</string>
+          <string name="Name">과학실_북쪽벽</string>
           <bool name="Anchored">true</bool>
-          <bool name="CanCollide">false</bool>
-          <Color3uint8 name="Color3uint8">2052774</Color3uint8>
+          <Color3uint8 name="Color3uint8">3568478</Color3uint8>
           <Vector3 name="Position">
-            <X>-8</X>
-            <Y>9</Y>
-            <Z>-6.4</Z>
+            <X>-185</X>
+            <Y>6</Y>
+            <Z>153</Z>
           </Vector3>
           <Vector3 name="size">
-            <X>18</X>
-            <Y>4</Y>
-            <Z>0.5</Z>
+            <X>56</X>
+            <Y>12</Y>
+            <Z>2</Z>
           </Vector3>
         </Properties>
       </Item>
       <Item class="Part" referent="34">
         <Properties>
-          <string name="Name">탈출문_프리뷰</string>
+          <string name="Name">과학실_동쪽벽</string>
           <bool name="Anchored">true</bool>
-          <bool name="CanCollide">false</bool>
-          <Color3uint8 name="Color3uint8">1769331</Color3uint8>
+          <Color3uint8 name="Color3uint8">3568478</Color3uint8>
           <Vector3 name="Position">
-            <X>305</X>
-            <Y>4</Y>
-            <Z>0</Z>
+            <X>-158</X>
+            <Y>6</Y>
+            <Z>135</Z>
           </Vector3>
           <Vector3 name="size">
-            <X>6</X>
-            <Y>8</Y>
-            <Z>10</Z>
+            <X>2</X>
+            <Y>12</Y>
+            <Z>36</Z>
           </Vector3>
         </Properties>
       </Item>
       <Item class="Part" referent="35">
         <Properties>
-          <string name="Name">잠긴문_붉은장벽_프리뷰</string>
+          <string name="Name">과학실_서쪽벽</string>
           <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">16724787</Color3uint8>
+          <Color3uint8 name="Color3uint8">3568478</Color3uint8>
           <Vector3 name="Position">
-            <X>305</X>
-            <Y>4.5</Y>
-            <Z>0</Z>
+            <X>-212</X>
+            <Y>6</Y>
+            <Z>135</Z>
           </Vector3>
           <Vector3 name="size">
-            <X>8</X>
-            <Y>9</Y>
-            <Z>12</Z>
+            <X>2</X>
+            <Y>12</Y>
+            <Z>36</Z>
           </Vector3>
-          <float name="Transparency">0.45</float>
         </Properties>
       </Item>
       <Item class="Part" referent="36">
         <Properties>
-          <string name="Name">시작위치_프리뷰</string>
+          <string name="Name">음악실_북쪽벽</string>
           <bool name="Anchored">true</bool>
-          <bool name="CanCollide">false</bool>
-          <Color3uint8 name="Color3uint8">4227327</Color3uint8>
+          <Color3uint8 name="Color3uint8">6900359</Color3uint8>
           <Vector3 name="Position">
-            <X>-52</X>
-            <Y>2</Y>
-            <Z>23</Z>
+            <X>-95</X>
+            <Y>6</Y>
+            <Z>153</Z>
           </Vector3>
           <Vector3 name="size">
-            <X>8</X>
-            <Y>1</Y>
-            <Z>8</Z>
+            <X>56</X>
+            <Y>12</Y>
+            <Z>2</Z>
           </Vector3>
         </Properties>
       </Item>
       <Item class="Part" referent="37">
         <Properties>
-          <string name="Name">눈괴물_프리뷰</string>
+          <string name="Name">음악실_동쪽벽</string>
+          <bool name="Anchored">true</bool>
+          <Color3uint8 name="Color3uint8">6900359</Color3uint8>
+          <Vector3 name="Position">
+            <X>-68</X>
+            <Y>6</Y>
+            <Z>135</Z>
+          </Vector3>
+          <Vector3 name="size">
+            <X>2</X>
+            <Y>12</Y>
+            <Z>36</Z>
+          </Vector3>
+        </Properties>
+      </Item>
+      <Item class="Part" referent="38">
+        <Properties>
+          <string name="Name">음악실_서쪽벽</string>
+          <bool name="Anchored">true</bool>
+          <Color3uint8 name="Color3uint8">6900359</Color3uint8>
+          <Vector3 name="Position">
+            <X>-122</X>
+            <Y>6</Y>
+            <Z>135</Z>
+          </Vector3>
+          <Vector3 name="size">
+            <X>2</X>
+            <Y>12</Y>
+            <Z>36</Z>
+          </Vector3>
+        </Properties>
+      </Item>
+      <Item class="Part" referent="39">
+        <Properties>
+          <string name="Name">미술실_북쪽벽</string>
+          <bool name="Anchored">true</bool>
+          <Color3uint8 name="Color3uint8">10051141</Color3uint8>
+          <Vector3 name="Position">
+            <X>125</X>
+            <Y>6</Y>
+            <Z>153</Z>
+          </Vector3>
+          <Vector3 name="size">
+            <X>56</X>
+            <Y>12</Y>
+            <Z>2</Z>
+          </Vector3>
+        </Properties>
+      </Item>
+      <Item class="Part" referent="40">
+        <Properties>
+          <string name="Name">미술실_동쪽벽</string>
+          <bool name="Anchored">true</bool>
+          <Color3uint8 name="Color3uint8">10051141</Color3uint8>
+          <Vector3 name="Position">
+            <X>152</X>
+            <Y>6</Y>
+            <Z>135</Z>
+          </Vector3>
+          <Vector3 name="size">
+            <X>2</X>
+            <Y>12</Y>
+            <Z>36</Z>
+          </Vector3>
+        </Properties>
+      </Item>
+      <Item class="Part" referent="41">
+        <Properties>
+          <string name="Name">미술실_서쪽벽</string>
+          <bool name="Anchored">true</bool>
+          <Color3uint8 name="Color3uint8">10051141</Color3uint8>
+          <Vector3 name="Position">
+            <X>98</X>
+            <Y>6</Y>
+            <Z>135</Z>
+          </Vector3>
+          <Vector3 name="size">
+            <X>2</X>
+            <Y>12</Y>
+            <Z>36</Z>
+          </Vector3>
+        </Properties>
+      </Item>
+      <Item class="Part" referent="42">
+        <Properties>
+          <string name="Name">방송실_북쪽벽</string>
+          <bool name="Anchored">true</bool>
+          <Color3uint8 name="Color3uint8">4552857</Color3uint8>
+          <Vector3 name="Position">
+            <X>225</X>
+            <Y>6</Y>
+            <Z>128</Z>
+          </Vector3>
+          <Vector3 name="size">
+            <X>56</X>
+            <Y>12</Y>
+            <Z>2</Z>
+          </Vector3>
+        </Properties>
+      </Item>
+      <Item class="Part" referent="43">
+        <Properties>
+          <string name="Name">방송실_동쪽벽</string>
+          <bool name="Anchored">true</bool>
+          <Color3uint8 name="Color3uint8">4552857</Color3uint8>
+          <Vector3 name="Position">
+            <X>252</X>
+            <Y>6</Y>
+            <Z>110</Z>
+          </Vector3>
+          <Vector3 name="size">
+            <X>2</X>
+            <Y>12</Y>
+            <Z>36</Z>
+          </Vector3>
+        </Properties>
+      </Item>
+      <Item class="Part" referent="44">
+        <Properties>
+          <string name="Name">방송실_서쪽벽</string>
+          <bool name="Anchored">true</bool>
+          <Color3uint8 name="Color3uint8">4552857</Color3uint8>
+          <Vector3 name="Position">
+            <X>198</X>
+            <Y>6</Y>
+            <Z>110</Z>
+          </Vector3>
+          <Vector3 name="size">
+            <X>2</X>
+            <Y>12</Y>
+            <Z>36</Z>
+          </Vector3>
+        </Properties>
+      </Item>
+      <Item class="Part" referent="45">
+        <Properties>
+          <string name="Name">보건실_북쪽벽</string>
+          <bool name="Anchored">true</bool>
+          <Color3uint8 name="Color3uint8">8540003</Color3uint8>
+          <Vector3 name="Position">
+            <X>-165</X>
+            <Y>6</Y>
+            <Z>-127</Z>
+          </Vector3>
+          <Vector3 name="size">
+            <X>56</X>
+            <Y>12</Y>
+            <Z>2</Z>
+          </Vector3>
+        </Properties>
+      </Item>
+      <Item class="Part" referent="46">
+        <Properties>
+          <string name="Name">보건실_동쪽벽</string>
+          <bool name="Anchored">true</bool>
+          <Color3uint8 name="Color3uint8">8540003</Color3uint8>
+          <Vector3 name="Position">
+            <X>-138</X>
+            <Y>6</Y>
+            <Z>-145</Z>
+          </Vector3>
+          <Vector3 name="size">
+            <X>2</X>
+            <Y>12</Y>
+            <Z>36</Z>
+          </Vector3>
+        </Properties>
+      </Item>
+      <Item class="Part" referent="47">
+        <Properties>
+          <string name="Name">보건실_서쪽벽</string>
+          <bool name="Anchored">true</bool>
+          <Color3uint8 name="Color3uint8">8540003</Color3uint8>
+          <Vector3 name="Position">
+            <X>-192</X>
+            <Y>6</Y>
+            <Z>-145</Z>
+          </Vector3>
+          <Vector3 name="size">
+            <X>2</X>
+            <Y>12</Y>
+            <Z>36</Z>
+          </Vector3>
+        </Properties>
+      </Item>
+      <Item class="Part" referent="48">
+        <Properties>
+          <string name="Name">체육관_남쪽벽</string>
+          <bool name="Anchored">true</bool>
+          <Color3uint8 name="Color3uint8">5725811</Color3uint8>
+          <Vector3 name="Position">
+            <X>-260</X>
+            <Y>6</Y>
+            <Z>-174</Z>
+          </Vector3>
+          <Vector3 name="size">
+            <X>86</X>
+            <Y>12</Y>
+            <Z>2</Z>
+          </Vector3>
+        </Properties>
+      </Item>
+      <Item class="Part" referent="49">
+        <Properties>
+          <string name="Name">체육관_동쪽벽</string>
+          <bool name="Anchored">true</bool>
+          <Color3uint8 name="Color3uint8">5725811</Color3uint8>
+          <Vector3 name="Position">
+            <X>-217</X>
+            <Y>6</Y>
+            <Z>-158</Z>
+          </Vector3>
+          <Vector3 name="size">
+            <X>2</X>
+            <Y>12</Y>
+            <Z>32</Z>
+          </Vector3>
+        </Properties>
+      </Item>
+      <Item class="Part" referent="50">
+        <Properties>
+          <string name="Name">체육관_서쪽벽</string>
+          <bool name="Anchored">true</bool>
+          <Color3uint8 name="Color3uint8">5725811</Color3uint8>
+          <Vector3 name="Position">
+            <X>-303</X>
+            <Y>6</Y>
+            <Z>-158</Z>
+          </Vector3>
+          <Vector3 name="size">
+            <X>2</X>
+            <Y>12</Y>
+            <Z>32</Z>
+          </Vector3>
+        </Properties>
+      </Item>
+      <Item class="Part" referent="51">
+        <Properties>
+          <string name="Name">랜드마크_시작구역</string>
           <bool name="Anchored">true</bool>
           <bool name="CanCollide">false</bool>
-          <Color3uint8 name="Color3uint8">15089702</Color3uint8>
+          <Color3uint8 name="Color3uint8">3048959</Color3uint8>
+          <token name="Material">288</token>
+          <Vector3 name="Position">
+            <X>-52</X>
+            <Y>27.5</Y>
+            <Z>22</Z>
+          </Vector3>
+          <Vector3 name="size">
+            <X>8</X>
+            <Y>55</Y>
+            <Z>8</Z>
+          </Vector3>
+        </Properties>
+      </Item>
+      <Item class="Part" referent="52">
+        <Properties>
+          <string name="Name">랜드마크_북쪽별관</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <Color3uint8 name="Color3uint8">9193471</Color3uint8>
+          <token name="Material">288</token>
+          <Vector3 name="Position">
+            <X>-185</X>
+            <Y>27.5</Y>
+            <Z>120</Z>
+          </Vector3>
+          <Vector3 name="size">
+            <X>8</X>
+            <Y>55</Y>
+            <Z>8</Z>
+          </Vector3>
+        </Properties>
+      </Item>
+      <Item class="Part" referent="53">
+        <Properties>
+          <string name="Name">랜드마크_남쪽별관</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <Color3uint8 name="Color3uint8">16745766</Color3uint8>
+          <token name="Material">288</token>
+          <Vector3 name="Position">
+            <X>135</X>
+            <Y>27.5</Y>
+            <Z>-145</Z>
+          </Vector3>
+          <Vector3 name="size">
+            <X>8</X>
+            <Y>55</Y>
+            <Z>8</Z>
+          </Vector3>
+        </Properties>
+      </Item>
+      <Item class="Part" referent="54">
+        <Properties>
+          <string name="Name">랜드마크_체육관</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <Color3uint8 name="Color3uint8">16765210</Color3uint8>
+          <token name="Material">288</token>
+          <Vector3 name="Position">
+            <X>-260</X>
+            <Y>27.5</Y>
+            <Z>-145</Z>
+          </Vector3>
+          <Vector3 name="size">
+            <X>8</X>
+            <Y>55</Y>
+            <Z>8</Z>
+          </Vector3>
+        </Properties>
+      </Item>
+      <Item class="Part" referent="55">
+        <Properties>
+          <string name="Name">랜드마크_탈출문</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <Color3uint8 name="Color3uint8">1376097</Color3uint8>
+          <token name="Material">288</token>
+          <Vector3 name="Position">
+            <X>305</X>
+            <Y>32.5</Y>
+            <Z>0</Z>
+          </Vector3>
+          <Vector3 name="size">
+            <X>10</X>
+            <Y>65</Y>
+            <Z>10</Z>
+          </Vector3>
+        </Properties>
+      </Item>
+      <Item class="Part" referent="56">
+        <Properties>
+          <string name="Name">랜드마크_중앙</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <Color3uint8 name="Color3uint8">57599</Color3uint8>
+          <token name="Material">288</token>
+          <Vector3 name="Position">
+            <X>0</X>
+            <Y>25</Y>
+            <Z>0</Z>
+          </Vector3>
+          <Vector3 name="size">
+            <X>6</X>
+            <Y>50</Y>
+            <Z>6</Z>
+          </Vector3>
+        </Properties>
+      </Item>
+      <Item class="Part" referent="57">
+        <Properties>
+          <string name="Name">탈출문_프리뷰</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <Color3uint8 name="Color3uint8">917345</Color3uint8>
+          <token name="Material">288</token>
+          <Vector3 name="Position">
+            <X>305</X>
+            <Y>7</Y>
+            <Z>0</Z>
+          </Vector3>
+          <Vector3 name="size">
+            <X>14</X>
+            <Y>14</Y>
+            <Z>24</Z>
+          </Vector3>
+          <float name="Transparency">0.2</float>
+        </Properties>
+      </Item>
+      <Item class="Part" referent="58">
+        <Properties>
+          <string name="Name">탈출문_잠금</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <Color3uint8 name="Color3uint8">16721446</Color3uint8>
+          <Vector3 name="Position">
+            <X>305</X>
+            <Y>5</Y>
+            <Z>0</Z>
+          </Vector3>
+          <Vector3 name="size">
+            <X>10</X>
+            <Y>10</Y>
+            <Z>18</Z>
+          </Vector3>
+          <float name="Transparency">0.45</float>
+        </Properties>
+      </Item>
+      <Item class="Part" referent="59">
+        <Properties>
+          <string name="Name">시작위치_마커</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <Color3uint8 name="Color3uint8">4230399</Color3uint8>
+          <token name="Material">288</token>
+          <Vector3 name="Position">
+            <X>-52</X>
+            <Y>1.5</Y>
+            <Z>23</Z>
+          </Vector3>
+          <Vector3 name="size">
+            <X>10</X>
+            <Y>1</Y>
+            <Z>10</Z>
+          </Vector3>
+        </Properties>
+      </Item>
+      <Item class="Part" referent="60">
+        <Properties>
+          <string name="Name">발전기_마커</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <Color3uint8 name="Color3uint8">4243455</Color3uint8>
+          <token name="Material">288</token>
+          <Vector3 name="Position">
+            <X>230</X>
+            <Y>3</Y>
+            <Z>-145</Z>
+          </Vector3>
+          <Vector3 name="size">
+            <X>8</X>
+            <Y>6</Y>
+            <Z>6</Z>
+          </Vector3>
+        </Properties>
+      </Item>
+      <Item class="Part" referent="61">
+        <Properties>
+          <string name="Name">퓨즈_1_마커</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <Color3uint8 name="Color3uint8">16769037</Color3uint8>
+          <token name="Material">288</token>
+          <Vector3 name="Position">
+            <X>-190</X>
+            <Y>4</Y>
+            <Z>135</Z>
+          </Vector3>
+          <token name="shape">0</token>
+          <Vector3 name="size">
+            <X>5</X>
+            <Y>5</Y>
+            <Z>5</Z>
+          </Vector3>
+        </Properties>
+      </Item>
+      <Item class="Part" referent="62">
+        <Properties>
+          <string name="Name">퓨즈_2_마커</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <Color3uint8 name="Color3uint8">16769037</Color3uint8>
+          <token name="Material">288</token>
+          <Vector3 name="Position">
+            <X>135</X>
+            <Y>4</Y>
+            <Z>-155</Z>
+          </Vector3>
+          <token name="shape">0</token>
+          <Vector3 name="size">
+            <X>5</X>
+            <Y>5</Y>
+            <Z>5</Z>
+          </Vector3>
+        </Properties>
+      </Item>
+      <Item class="Part" referent="63">
+        <Properties>
+          <string name="Name">퓨즈_3_마커</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <Color3uint8 name="Color3uint8">16769037</Color3uint8>
+          <token name="Material">288</token>
+          <Vector3 name="Position">
+            <X>255</X>
+            <Y>4</Y>
+            <Z>110</Z>
+          </Vector3>
+          <token name="shape">0</token>
+          <Vector3 name="size">
+            <X>5</X>
+            <Y>5</Y>
+            <Z>5</Z>
+          </Vector3>
+        </Properties>
+      </Item>
+      <Item class="Part" referent="64">
+        <Properties>
+          <string name="Name">눈괴물_마커</string>
+          <bool name="Anchored">true</bool>
+          <bool name="CanCollide">false</bool>
+          <Color3uint8 name="Color3uint8">15087647</Color3uint8>
+          <token name="Material">288</token>
           <Vector3 name="Position">
             <X>-6</X>
             <Y>4</Y>
             <Z>0</Z>
           </Vector3>
           <Vector3 name="size">
-            <X>5</X>
-            <Y>7</Y>
-            <Z>5</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="38">
-        <Properties>
-          <string name="Name">발전기_프리뷰</string>
-          <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">4243455</Color3uint8>
-          <Vector3 name="Position">
-            <X>230</X>
-            <Y>2.2</Y>
-            <Z>-145</Z>
-          </Vector3>
-          <Vector3 name="size">
             <X>6</X>
-            <Y>4</Y>
-            <Z>4</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="39">
-        <Properties>
-          <string name="Name">퓨즈_1_프리뷰</string>
-          <bool name="Anchored">true</bool>
-          <bool name="CanCollide">false</bool>
-          <Color3uint8 name="Color3uint8">16767245</Color3uint8>
-          <Vector3 name="Position">
-            <X>-190</X>
-            <Y>2.4</Y>
-            <Z>135</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>3</X>
-            <Y>3</Y>
-            <Z>3</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="40">
-        <Properties>
-          <string name="Name">퓨즈_2_프리뷰</string>
-          <bool name="Anchored">true</bool>
-          <bool name="CanCollide">false</bool>
-          <Color3uint8 name="Color3uint8">16767245</Color3uint8>
-          <Vector3 name="Position">
-            <X>135</X>
-            <Y>2.4</Y>
-            <Z>-155</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>3</X>
-            <Y>3</Y>
-            <Z>3</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="41">
-        <Properties>
-          <string name="Name">퓨즈_3_프리뷰</string>
-          <bool name="Anchored">true</bool>
-          <bool name="CanCollide">false</bool>
-          <Color3uint8 name="Color3uint8">16767245</Color3uint8>
-          <Vector3 name="Position">
-            <X>255</X>
-            <Y>2.4</Y>
-            <Z>110</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>3</X>
-            <Y>3</Y>
-            <Z>3</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="42">
-        <Properties>
-          <string name="Name">손전등_프리뷰</string>
-          <bool name="Anchored">true</bool>
-          <bool name="CanCollide">false</bool>
-          <Color3uint8 name="Color3uint8">15135487</Color3uint8>
-          <Vector3 name="Position">
-            <X>-55</X>
-            <Y>2.2</Y>
-            <Z>29</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>3</X>
-            <Y>2</Y>
-            <Z>3</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="43">
-        <Properties>
-          <string name="Name">에너지음료_프리뷰</string>
-          <bool name="Anchored">true</bool>
-          <bool name="CanCollide">false</bool>
-          <Color3uint8 name="Color3uint8">16741146</Color3uint8>
-          <Vector3 name="Position">
-            <X>95</X>
-            <Y>2.2</Y>
-            <Z>-122</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>3</X>
-            <Y>2</Y>
-            <Z>3</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="44">
-        <Properties>
-          <string name="Name">보호부적_프리뷰</string>
-          <bool name="Anchored">true</bool>
-          <bool name="CanCollide">false</bool>
-          <Color3uint8 name="Color3uint8">10902015</Color3uint8>
-          <Vector3 name="Position">
-            <X>-245</X>
-            <Y>2.2</Y>
-            <Z>88</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>3</X>
-            <Y>2</Y>
-            <Z>3</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="45">
-        <Properties>
-          <string name="Name">도서관_책장_1</string>
-          <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">5845786</Color3uint8>
-          <Vector3 name="Position">
-            <X>-16</X>
-            <Y>4</Y>
-            <Z>31</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>2.2</X>
             <Y>7</Y>
-            <Z>10</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="46">
-        <Properties>
-          <string name="Name">도서관_책장_2</string>
-          <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">5845786</Color3uint8>
-          <Vector3 name="Position">
-            <X>-8</X>
-            <Y>4</Y>
-            <Z>31</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>2.2</X>
-            <Y>7</Y>
-            <Z>10</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="47">
-        <Properties>
-          <string name="Name">도서관_책장_3</string>
-          <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">5845786</Color3uint8>
-          <Vector3 name="Position">
-            <X>0</X>
-            <Y>4</Y>
-            <Z>31</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>2.2</X>
-            <Y>7</Y>
-            <Z>10</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="48">
-        <Properties>
-          <string name="Name">급식실_테이블_1</string>
-          <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">9722931</Color3uint8>
-          <Vector3 name="Position">
-            <X>9</X>
-            <Y>2.2</Y>
-            <Z>-31</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>7</X>
-            <Y>1</Y>
-            <Z>3</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="49">
-        <Properties>
-          <string name="Name">급식실_테이블_2</string>
-          <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">9722931</Color3uint8>
-          <Vector3 name="Position">
-            <X>22</X>
-            <Y>2.2</Y>
-            <Z>-31</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>7</X>
-            <Y>1</Y>
-            <Z>3</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="50">
-        <Properties>
-          <string name="Name">급식실_테이블_3</string>
-          <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">9722931</Color3uint8>
-          <Vector3 name="Position">
-            <X>35</X>
-            <Y>2.2</Y>
-            <Z>-31</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>7</X>
-            <Y>1</Y>
-            <Z>3</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="51">
-        <Properties>
-          <string name="Name">자판기_프리뷰</string>
-          <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">15079982</Color3uint8>
-          <Vector3 name="Position">
-            <X>39</X>
-            <Y>3.4</Y>
-            <Z>-36</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>3.2</X>
-            <Y>6</Y>
-            <Z>2</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="52">
-        <Properties>
-          <string name="Name">트로피진열장_프리뷰</string>
-          <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">9197855</Color3uint8>
-          <Vector3 name="Position">
-            <X>-42</X>
-            <Y>4</Y>
-            <Z>6.8</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>8</X>
-            <Y>5</Y>
-            <Z>1.2</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="53">
-        <Properties>
-          <string name="Name">사물함_1</string>
-          <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">1733542</Color3uint8>
-          <Vector3 name="Position">
-            <X>-44</X>
-            <Y>4</Y>
-            <Z>-7</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>3</X>
-            <Y>7</Y>
-            <Z>2.2</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="54">
-        <Properties>
-          <string name="Name">사물함_2</string>
-          <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">1733542</Color3uint8>
-          <Vector3 name="Position">
-            <X>13</X>
-            <Y>4</Y>
-            <Z>9</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>3</X>
-            <Y>7</Y>
-            <Z>2.2</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="55">
-        <Properties>
-          <string name="Name">사물함_3</string>
-          <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">1733542</Color3uint8>
-          <Vector3 name="Position">
-            <X>44</X>
-            <Y>4</Y>
-            <Z>-8</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>3</X>
-            <Y>7</Y>
-            <Z>2.2</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="56">
-        <Properties>
-          <string name="Name">천장등_복도</string>
-          <bool name="Anchored">true</bool>
-          <bool name="CanCollide">false</bool>
-          <Color3uint8 name="Color3uint8">16773798</Color3uint8>
-          <Vector3 name="Position">
-            <X>2</X>
-            <Y>11.2</Y>
-            <Z>0</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>55</X>
-            <Y>0.4</Y>
-            <Z>4</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="57">
-        <Properties>
-          <string name="Name">천장등_도서관</string>
-          <bool name="Anchored">true</bool>
-          <bool name="CanCollide">false</bool>
-          <Color3uint8 name="Color3uint8">15129087</Color3uint8>
-          <Vector3 name="Position">
-            <X>-8</X>
-            <Y>11.2</Y>
-            <Z>32</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>18</X>
-            <Y>0.4</Y>
-            <Z>4</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="58">
-        <Properties>
-          <string name="Name">천장등_급식실</string>
-          <bool name="Anchored">true</bool>
-          <bool name="CanCollide">false</bool>
-          <Color3uint8 name="Color3uint8">16770726</Color3uint8>
-          <Vector3 name="Position">
-            <X>24</X>
-            <Y>11.2</Y>
-            <Z>-31</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>18</X>
-            <Y>0.4</Y>
-            <Z>4</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="59">
-        <Properties>
-          <string name="Name">북쪽별관_복도_프리뷰</string>
-          <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">4350356</Color3uint8>
-          <Vector3 name="Position">
-            <X>20</X>
-            <Y>0.8</Y>
-            <Z>120</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>520</X>
-            <Y>0.2</Y>
-            <Z>14</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="60">
-        <Properties>
-          <string name="Name">남쪽별관_복도_프리뷰</string>
-          <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">8413506</Color3uint8>
-          <Vector3 name="Position">
-            <X>20</X>
-            <Y>0.8</Y>
-            <Z>-145</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>520</X>
-            <Y>0.2</Y>
-            <Z>14</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="61">
-        <Properties>
-          <string name="Name">서쪽연결복도_프리뷰</string>
-          <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">4350356</Color3uint8>
-          <Vector3 name="Position">
-            <X>-230</X>
-            <Y>0.85</Y>
-            <Z>0</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>14</X>
-            <Y>0.2</Y>
-            <Z>260</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="62">
-        <Properties>
-          <string name="Name">동쪽연결복도_프리뷰</string>
-          <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">4350356</Color3uint8>
-          <Vector3 name="Position">
-            <X>250</X>
-            <Y>0.85</Y>
-            <Z>0</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>14</X>
-            <Y>0.2</Y>
-            <Z>260</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="63">
-        <Properties>
-          <string name="Name">과학실_프리뷰</string>
-          <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">3705963</Color3uint8>
-          <Vector3 name="Position">
-            <X>-185</X>
-            <Y>1</Y>
-            <Z>135</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>56</X>
-            <Y>1</Y>
-            <Z>38</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="64">
-        <Properties>
-          <string name="Name">음악실_프리뷰</string>
-          <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">7030694</Color3uint8>
-          <Vector3 name="Position">
-            <X>-95</X>
-            <Y>1</Y>
-            <Z>135</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>56</X>
-            <Y>1</Y>
-            <Z>38</Z>
+            <Z>6</Z>
           </Vector3>
         </Properties>
       </Item>
       <Item class="Part" referent="65">
         <Properties>
-          <string name="Name">미술실_프리뷰</string>
-          <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">10051911</Color3uint8>
-          <Vector3 name="Position">
-            <X>125</X>
-            <Y>1</Y>
-            <Z>135</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>56</X>
-            <Y>1</Y>
-            <Z>38</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="66">
-        <Properties>
-          <string name="Name">방송실_프리뷰</string>
-          <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">4684461</Color3uint8>
-          <Vector3 name="Position">
-            <X>225</X>
-            <Y>1</Y>
-            <Z>110</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>56</X>
-            <Y>1</Y>
-            <Z>38</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="67">
-        <Properties>
-          <string name="Name">체육관_프리뷰</string>
-          <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">6056832</Color3uint8>
-          <Vector3 name="Position">
-            <X>-260</X>
-            <Y>1</Y>
-            <Z>-145</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>86</X>
-            <Y>1</Y>
-            <Z>58</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="68">
-        <Properties>
-          <string name="Name">운동장_프리뷰</string>
-          <bool name="Anchored">true</bool>
-          <Color3uint8 name="Color3uint8">3380285</Color3uint8>
-          <Vector3 name="Position">
-            <X>115</X>
-            <Y>1.05</Y>
-            <Z>-35</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>120</X>
-            <Y>0.5</Y>
-            <Z>70</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="69">
-        <Properties>
-          <string name="Name">대형_탈출문_프리뷰</string>
+          <string name="Name">귀신_마커</string>
           <bool name="Anchored">true</bool>
           <bool name="CanCollide">false</bool>
-          <Color3uint8 name="Color3uint8">917337</Color3uint8>
-          <Vector3 name="Position">
-            <X>305</X>
-            <Y>6</Y>
-            <Z>0</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>14</X>
-            <Y>12</Y>
-            <Z>24</Z>
-          </Vector3>
-          <float name="Transparency">0.25</float>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="70">
-        <Properties>
-          <string name="Name">대형맵_크기표시_프리뷰</string>
-          <bool name="Anchored">true</bool>
-          <bool name="CanCollide">false</bool>
-          <Color3uint8 name="Color3uint8">1733593</Color3uint8>
-          <Vector3 name="Position">
-            <X>0</X>
-            <Y>18</Y>
-            <Z>228</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>90</X>
-            <Y>3</Y>
-            <Z>1</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="71">
-        <Properties>
-          <string name="Name">도서관귀신_몸통_프리뷰</string>
-          <bool name="Anchored">true</bool>
-          <bool name="CanCollide">false</bool>
-          <Color3uint8 name="Color3uint8">12579583</Color3uint8>
+          <Color3uint8 name="Color3uint8">13103871</Color3uint8>
+          <token name="Material">288</token>
           <Vector3 name="Position">
             <X>6</X>
-            <Y>5.4</Y>
+            <Y>4</Y>
             <Z>28</Z>
           </Vector3>
           <Vector3 name="size">
             <X>5</X>
-            <Y>6</Y>
-            <Z>2.6</Z>
+            <Y>7</Y>
+            <Z>5</Z>
           </Vector3>
-          <float name="Transparency">0.35</float>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="72">
-        <Properties>
-          <string name="Name">도서관귀신_머리_프리뷰</string>
-          <bool name="Anchored">true</bool>
-          <bool name="CanCollide">false</bool>
-          <Color3uint8 name="Color3uint8">14745599</Color3uint8>
-          <Vector3 name="Position">
-            <X>6</X>
-            <Y>8.2</Y>
-            <Z>28</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>3.5</X>
-            <Y>3.5</Y>
-            <Z>3.5</Z>
-          </Vector3>
-          <float name="Transparency">0.25</float>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="73">
-        <Properties>
-          <string name="Name">도서관귀신_머리카락_프리뷰</string>
-          <bool name="Anchored">true</bool>
-          <bool name="CanCollide">false</bool>
-          <Color3uint8 name="Color3uint8">855834</Color3uint8>
-          <Vector3 name="Position">
-            <X>6</X>
-            <Y>7.2</Y>
-            <Z>29.3</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>4.2</X>
-            <Y>4.2</Y>
-            <Z>0.7</Z>
-          </Vector3>
-          <float name="Transparency">0.15</float>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="74">
-        <Properties>
-          <string name="Name">도서관귀신_눈_왼쪽_프리뷰</string>
-          <bool name="Anchored">true</bool>
-          <bool name="CanCollide">false</bool>
-          <Color3uint8 name="Color3uint8">868492</Color3uint8>
-          <Vector3 name="Position">
-            <X>5.25</X>
-            <Y>8.35</Y>
-            <Z>26.2</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>0.5</X>
-            <Y>0.8</Y>
-            <Z>0.2</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="75">
-        <Properties>
-          <string name="Name">도서관귀신_눈_오른쪽_프리뷰</string>
-          <bool name="Anchored">true</bool>
-          <bool name="CanCollide">false</bool>
-          <Color3uint8 name="Color3uint8">868492</Color3uint8>
-          <Vector3 name="Position">
-            <X>6.75</X>
-            <Y>8.35</Y>
-            <Z>26.2</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>0.5</X>
-            <Y>0.8</Y>
-            <Z>0.2</Z>
-          </Vector3>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="76">
-        <Properties>
-          <string name="Name">도서관귀신_치마조각_1_프리뷰</string>
-          <bool name="Anchored">true</bool>
-          <bool name="CanCollide">false</bool>
-          <Color3uint8 name="Color3uint8">12120831</Color3uint8>
-          <Vector3 name="Position">
-            <X>4.4</X>
-            <Y>1.6</Y>
-            <Z>28</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>0.8</X>
-            <Y>2.4</Y>
-            <Z>0.5</Z>
-          </Vector3>
-          <float name="Transparency">0.48</float>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="77">
-        <Properties>
-          <string name="Name">도서관귀신_치마조각_2_프리뷰</string>
-          <bool name="Anchored">true</bool>
-          <bool name="CanCollide">false</bool>
-          <Color3uint8 name="Color3uint8">12120831</Color3uint8>
-          <Vector3 name="Position">
-            <X>6</X>
-            <Y>1.4</Y>
-            <Z>28</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>0.8</X>
-            <Y>2.8</Y>
-            <Z>0.5</Z>
-          </Vector3>
-          <float name="Transparency">0.48</float>
-        </Properties>
-      </Item>
-      <Item class="Part" referent="78">
-        <Properties>
-          <string name="Name">도서관귀신_치마조각_3_프리뷰</string>
-          <bool name="Anchored">true</bool>
-          <bool name="CanCollide">false</bool>
-          <Color3uint8 name="Color3uint8">12120831</Color3uint8>
-          <Vector3 name="Position">
-            <X>7.6</X>
-            <Y>1.6</Y>
-            <Z>28</Z>
-          </Vector3>
-          <Vector3 name="size">
-            <X>0.8</X>
-            <Y>2.4</Y>
-            <Z>0.5</Z>
-          </Vector3>
-          <float name="Transparency">0.48</float>
+          <float name="Transparency">0.3</float>
         </Properties>
       </Item>
     </Item>
