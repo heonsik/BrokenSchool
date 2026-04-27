@@ -140,30 +140,6 @@
       }
     },
     {
-      "name": "Preview_OpenCeiling",
-      "className": "Part",
-      "properties": {
-        "Anchored": true,
-        "Size": [
-          700,
-          0.2,
-          460
-        ],
-        "Position": [
-          0,
-          15.5,
-          0
-        ],
-        "Color": [
-          0.5098039215686274,
-          0.5411764705882353,
-          0.5882352941176471
-        ],
-        "Transparency": 0.8,
-        "CanCollide": false
-      }
-    },
-    {
       "name": "MainGuide_1",
       "className": "Part",
       "properties": {
@@ -8773,12 +8749,12 @@
         "Anchored": true,
         "Size": [
           36,
-          4,
+          0.12,
           20
         ],
         "Position": [
           -46,
-          2.5,
+          1.05,
           25
         ],
         "Color": [
@@ -8787,7 +8763,7 @@
           0.7843137254901961
         ],
         "Material": "Neon",
-        "Transparency": 0.35,
+        "Transparency": 0.68,
         "CanCollide": false
       }
     },
@@ -8798,12 +8774,12 @@
         "Anchored": true,
         "Size": [
           56,
-          5,
+          0.12,
           38
         ],
         "Position": [
           -185,
-          2.5,
+          1.05,
           135
         ],
         "Color": [
@@ -8812,7 +8788,7 @@
           0.5176470588235295
         ],
         "Material": "Neon",
-        "Transparency": 0.35,
+        "Transparency": 0.68,
         "CanCollide": false
       }
     },
@@ -8823,12 +8799,12 @@
         "Anchored": true,
         "Size": [
           56,
-          5,
+          0.12,
           38
         ],
         "Position": [
           -95,
-          2.5,
+          1.05,
           135
         ],
         "Color": [
@@ -8837,7 +8813,7 @@
           0.8784313725490196
         ],
         "Material": "Neon",
-        "Transparency": 0.35,
+        "Transparency": 0.68,
         "CanCollide": false
       }
     },
@@ -8848,12 +8824,12 @@
         "Anchored": true,
         "Size": [
           56,
-          5,
+          0.12,
           38
         ],
         "Position": [
           125,
-          2.5,
+          1.05,
           135
         ],
         "Color": [
@@ -8862,7 +8838,7 @@
           0.1803921568627451
         ],
         "Material": "Neon",
-        "Transparency": 0.35,
+        "Transparency": 0.68,
         "CanCollide": false
       }
     },
@@ -8873,12 +8849,12 @@
         "Anchored": true,
         "Size": [
           56,
-          5,
+          0.12,
           38
         ],
         "Position": [
           225,
-          2.5,
+          1.05,
           110
         ],
         "Color": [
@@ -8887,7 +8863,7 @@
           0.8784313725490196
         ],
         "Material": "Neon",
-        "Transparency": 0.35,
+        "Transparency": 0.68,
         "CanCollide": false
       }
     },
@@ -8898,12 +8874,12 @@
         "Anchored": true,
         "Size": [
           56,
-          5,
+          0.12,
           38
         ],
         "Position": [
           -165,
-          2.5,
+          1.05,
           -145
         ],
         "Color": [
@@ -8912,7 +8888,7 @@
           0.45098039215686275
         ],
         "Material": "Neon",
-        "Transparency": 0.35,
+        "Transparency": 0.68,
         "CanCollide": false
       }
     },
@@ -8923,12 +8899,12 @@
         "Anchored": true,
         "Size": [
           86,
-          5,
+          0.12,
           58
         ],
         "Position": [
           -260,
-          2.5,
+          1.05,
           -145
         ],
         "Color": [
@@ -8937,7 +8913,7 @@
           0.6509803921568628
         ],
         "Material": "Neon",
-        "Transparency": 0.35,
+        "Transparency": 0.68,
         "CanCollide": false
       }
     },
@@ -8948,12 +8924,12 @@
         "Anchored": true,
         "Size": [
           120,
-          5,
+          0.12,
           70
         ],
         "Position": [
           115,
-          2.5,
+          1.05,
           -35
         ],
         "Color": [
@@ -8962,7 +8938,7 @@
           0.25098039215686274
         ],
         "Material": "Neon",
-        "Transparency": 0.35,
+        "Transparency": 0.68,
         "CanCollide": false
       }
     },
@@ -8973,12 +8949,12 @@
         "Anchored": true,
         "Size": [
           52,
-          4,
+          0.12,
           36
         ],
         "Position": [
           230,
-          2,
+          1.05,
           -145
         ],
         "Color": [
@@ -8987,7 +8963,7 @@
           0.8784313725490196
         ],
         "Material": "Neon",
-        "Transparency": 0.35,
+        "Transparency": 0.68,
         "CanCollide": false
       }
     },
@@ -8997,13 +8973,13 @@
       "properties": {
         "Anchored": true,
         "Size": [
-          7,
-          45,
-          7
+          4,
+          16,
+          4
         ],
         "Position": [
           -52,
-          27.5,
+          8,
           22
         ],
         "Color": [
@@ -9012,7 +8988,7 @@
           1
         ],
         "Material": "Neon",
-        "Transparency": 0.2,
+        "Transparency": 0.35,
         "CanCollide": false
       }
     },
@@ -9022,13 +8998,13 @@
       "properties": {
         "Anchored": true,
         "Size": [
-          7,
-          45,
-          7
+          4,
+          16,
+          4
         ],
         "Position": [
           -185,
-          27.5,
+          8,
           120
         ],
         "Color": [
@@ -9037,7 +9013,7 @@
           1
         ],
         "Material": "Neon",
-        "Transparency": 0.2,
+        "Transparency": 0.35,
         "CanCollide": false
       }
     },
@@ -9047,13 +9023,13 @@
       "properties": {
         "Anchored": true,
         "Size": [
-          7,
-          45,
-          7
+          4,
+          16,
+          4
         ],
         "Position": [
           135,
-          27.5,
+          8,
           -145
         ],
         "Color": [
@@ -9062,7 +9038,7 @@
           0.14901960784313725
         ],
         "Material": "Neon",
-        "Transparency": 0.2,
+        "Transparency": 0.35,
         "CanCollide": false
       }
     },
@@ -9072,13 +9048,13 @@
       "properties": {
         "Anchored": true,
         "Size": [
-          7,
-          45,
-          7
+          4,
+          16,
+          4
         ],
         "Position": [
           -260,
-          27.5,
+          8,
           -145
         ],
         "Color": [
@@ -9087,7 +9063,7 @@
           0.10196078431372549
         ],
         "Material": "Neon",
-        "Transparency": 0.2,
+        "Transparency": 0.35,
         "CanCollide": false
       }
     },
@@ -9097,13 +9073,13 @@
       "properties": {
         "Anchored": true,
         "Size": [
-          10,
-          65,
-          10
+          4,
+          16,
+          4
         ],
         "Position": [
           305,
-          32.5,
+          8,
           0
         ],
         "Color": [
@@ -9112,7 +9088,7 @@
           0.3803921568627451
         ],
         "Material": "Neon",
-        "Transparency": 0.2,
+        "Transparency": 0.35,
         "CanCollide": false
       }
     },
@@ -9122,13 +9098,13 @@
       "properties": {
         "Anchored": true,
         "Size": [
-          6,
-          50,
-          6
+          4,
+          16,
+          4
         ],
         "Position": [
           0,
-          25,
+          8,
           0
         ],
         "Color": [
@@ -9137,7 +9113,7 @@
           1
         ],
         "Material": "Neon",
-        "Transparency": 0.2,
+        "Transparency": 0.35,
         "CanCollide": false
       }
     },

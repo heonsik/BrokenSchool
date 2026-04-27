@@ -31,17 +31,20 @@ function wall(name, position, size, color = rgb(132, 137, 143)) {
 }
 
 function zone(name, position, size, color) {
-  part(name, size, position, color, {
+  part(name, [size[0], 0.12, size[2]], [position[0], 1.05, position[2]], color, {
     material: "Neon",
-    transparency: 0.35,
+    transparency: 0.68,
     canCollide: false,
   });
 }
 
 function marker(name, position, color, size = [7, 45, 7]) {
-  part(name, size, position, color, {
+  const width = Math.min(size[0], 4);
+  const height = Math.min(size[1], 16);
+  const depth = Math.min(size[2], 4);
+  part(name, [width, height, depth], [position[0], height / 2, position[2]], color, {
     material: "Neon",
-    transparency: 0.2,
+    transparency: 0.35,
     canCollide: false,
   });
 }
@@ -124,11 +127,6 @@ part("NorthCorridor_Floor", [520, 0.08, 14], [20, 0.55, 120], rgb(66, 86, 112), 
 part("SouthCorridor_Floor", [520, 0.08, 14], [20, 0.55, -145], rgb(66, 86, 112), { material: "Slate" });
 part("WestConnector_Floor", [14, 0.08, 260], [-230, 0.56, 0], rgb(66, 86, 112), { material: "Slate" });
 part("EastConnector_Floor", [14, 0.08, 260], [250, 0.56, 0], rgb(66, 86, 112), { material: "Slate" });
-part("Preview_OpenCeiling", [700, 0.2, 460], [0, 15.5, 0], rgb(130, 138, 150), {
-  transparency: 0.8,
-  canCollide: false,
-});
-
 for (let i = 1; i <= 11; i += 1) guide(`MainGuide_${i}`, [-270 + i * 50, 0.72, 0], [28, 0.08, 1.1]);
 for (let i = 1; i <= 8; i += 1) {
   guide(`NorthGuide_${i}`, [-210 + i * 55, 0.72, 120], [30, 0.08, 1.1], rgb(140, 210, 255));
