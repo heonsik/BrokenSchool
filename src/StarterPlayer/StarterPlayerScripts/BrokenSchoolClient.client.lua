@@ -1,5 +1,6 @@
 local ContextActionService = game:GetService("ContextActionService")
 local Debris = game:GetService("Debris")
+local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -173,6 +174,15 @@ rainOverlay.Size = UDim2.fromScale(1, 1)
 rainOverlay.ZIndex = 38
 rainOverlay.Parent = screenGui
 
+local lightningOverlay = Instance.new("Frame")
+lightningOverlay.Name = "LightningOverlay"
+lightningOverlay.BackgroundColor3 = Color3.fromRGB(215, 235, 255)
+lightningOverlay.BackgroundTransparency = 1
+lightningOverlay.BorderSizePixel = 0
+lightningOverlay.Size = UDim2.fromScale(1, 1)
+lightningOverlay.ZIndex = 48
+lightningOverlay.Parent = screenGui
+
 local lastSlideTime = -GameConfig.Slide.Cooldown
 local isSliding = false
 local hasFlashlight = false
@@ -206,9 +216,18 @@ local monsterNearSound = createSound("MonsterNear", GameConfig.Sounds.MonsterNea
 local caughtSound = createSound("Caught", GameConfig.Sounds.Caught, 0.45, false)
 local escapedSound = createSound("Escaped", GameConfig.Sounds.Escaped, 0.55, false)
 local rainSound = createSound("Rain", GameConfig.Sounds.Rain, 0, true)
+local thunderSound = createSound("Thunder", GameConfig.Sounds.Thunder, GameConfig.Rain.ThunderVolume, false)
 
 ambienceSound:Play()
 monsterNearSound:Play()
+
+local lightningCorrection = Instance.new("ColorCorrectionEffect")
+lightningCorrection.Name = "BrokenSchoolLightningFlash"
+lightningCorrection.Brightness = 0
+lightningCorrection.Contrast = 0
+lightningCorrection.Saturation = 0
+lightningCorrection.TintColor = Color3.fromRGB(255, 255, 255)
+lightningCorrection.Parent = Lighting
 
 local rainPart = Instance.new("Part")
 rainPart.Name = "LocalRainEmitter"
@@ -328,6 +347,57 @@ local function setRainEnabled(enabled)
             end
         end)
     end
+end
+
+local function playLightning(payload)
+    if not rainActive then
+        return
+    end
+
+    local intensity = math.clamp((payload and payload.intensity) or 1, 0.65, 1.25)
+    local flashTransparency = math.clamp(0.38 - intensity * 0.16, 0.14, 0.32)
+    local flashIn = TweenInfo.new(0.035, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
+    local flashOut = TweenInfo.new(0.24, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+
+    local function flashOnce(peak)
+        lightningOverlay.BackgroundTransparency = 1
+        lightningCorrection.Brightness = 0
+        lightningCorrection.Contrast = 0
+
+        TweenService:Create(lightningOverlay, flashIn, { BackgroundTransparency = peak }):Play()
+        TweenService:Create(lightningCorrection, flashIn, {
+            Brightness = 0.52 * intensity,
+            Contrast = 0.18,
+            Saturation = -0.1,
+            TintColor = Color3.fromRGB(220, 235, 255),
+        }):Play()
+
+        task.delay(0.055, function()
+            TweenService:Create(lightningOverlay, flashOut, { BackgroundTransparency = 1 }):Play()
+            TweenService:Create(lightningCorrection, flashOut, {
+                Brightness = 0,
+                Contrast = 0,
+                Saturation = 0,
+                TintColor = Color3.fromRGB(255, 255, 255),
+            }):Play()
+        end)
+    end
+
+    flashOnce(flashTransparency)
+    task.delay(0.12, function()
+        if rainActive and math.random() < 0.65 then
+            flashOnce(math.clamp(flashTransparency + 0.08, 0.22, 0.42))
+        end
+    end)
+
+    task.delay((payload and payload.thunderDelay) or 1.2, function()
+        if rainActive then
+            thunderSound.Volume = GameConfig.Rain.ThunderVolume * intensity
+            thunderSound.PlaybackSpeed = math.random(88, 105) / 100
+            thunderSound.TimePosition = 0
+            thunderSound:Play()
+        end
+    end)
 end
 
 local function updateInventoryLabel()
@@ -497,6 +567,8 @@ gameEvent.OnClientEvent:Connect(function(action, text)
     elseif action == "Rain" then
         local state = text or {}
         setRainEnabled(state.active == true)
+    elseif action == "Lightning" then
+        playLightning(text)
     end
 end)
 

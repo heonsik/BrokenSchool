@@ -215,6 +215,16 @@ local function sendRainState(player)
     gameEvent:FireClient(player, "Rain", makeRainPayload())
 end
 
+local function triggerLightning()
+    gameEvent:FireAllClients("Lightning", {
+        intensity = math.random(75, 115) / 100,
+        thunderDelay = math.random(
+            math.floor(GameConfig.Rain.ThunderMinDelay * 10),
+            math.floor(GameConfig.Rain.ThunderMaxDelay * 10)
+        ) / 10,
+    })
+end
+
 local function fireMessage(player, action, text)
     gameEvent:FireClient(player, action, text)
 end
@@ -1867,7 +1877,16 @@ task.spawn(function()
     task.wait(GameConfig.Rain.InitialClearDuration)
     while true do
         setRainActive(true)
-        task.wait(GameConfig.Rain.Duration)
+        while rainState.active do
+            local delaySeconds = math.random(GameConfig.Rain.LightningMinDelay, GameConfig.Rain.LightningMaxDelay)
+            task.wait(math.min(delaySeconds, math.max(0, rainState.endsAt - os.clock())))
+            if rainState.active and os.clock() < rainState.endsAt then
+                triggerLightning()
+            end
+            if os.clock() >= rainState.endsAt then
+                break
+            end
+        end
         setRainActive(false)
         task.wait(GameConfig.Rain.ClearDuration)
     end

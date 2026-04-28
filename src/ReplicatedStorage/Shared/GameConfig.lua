@@ -125,6 +125,11 @@ local GameConfig = {
         FadeTime = 4,
         ParticleRate = 900,
         SoundVolume = 0.32,
+        LightningMinDelay = 18,
+        LightningMaxDelay = 45,
+        ThunderMinDelay = 0.7,
+        ThunderMaxDelay = 2.4,
+        ThunderVolume = 0.7,
     },
 
     -- rbxassetid:// 형식으로 수정 (올바른 Roblox 에셋 ID 형식)
@@ -135,6 +140,7 @@ local GameConfig = {
         Caught     = "rbxassetid://4962698843",
         Escaped    = "rbxassetid://4612431428",
         Rain       = "rbxassetid://9112854440",
+        Thunder    = "rbxassetid://9120386431",
     },
 }
 
