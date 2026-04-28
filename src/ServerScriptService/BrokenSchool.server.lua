@@ -6,19 +6,7 @@ local Lighting = game:GetService("Lighting")
 
 local GameConfig = require(ReplicatedStorage.Shared.GameConfig)
 
-local previewMap = workspace:FindFirstChild("StaticPreviewMap")
-if previewMap then
-    previewMap:Destroy()
-end
-
-local worldFolder = workspace:FindFirstChild(GameConfig.WorldFolderName)
-if worldFolder then
-    worldFolder:Destroy()
-end
-
-worldFolder = Instance.new("Folder")
-worldFolder.Name = GameConfig.WorldFolderName
-worldFolder.Parent = workspace
+local worldFolder = workspace:WaitForChild(GameConfig.WorldFolderName)
 
 local remotesFolder = ReplicatedStorage:FindFirstChild(GameConfig.RemotesFolderName)
 if not remotesFolder then
@@ -85,12 +73,20 @@ local gameState = {
     generatorPowered = false,
 }
 
+local rainState = {
+    active = false,
+    startedAt = os.clock(),
+    endsAt = os.clock() + GameConfig.Rain.InitialClearDuration,
+}
+
 -- 탈출 완료 플레이어 집합 (잡히지 않도록)
 local wonPlayers = {}
 
 local hideZones = {}
 local exitDoorPart = nil
 local exitLockPart = nil
+local monsterModel = nil
+local ghostModel = nil
 
 local function createPart(name, size, cframe, color, material, parent)
     local part = Instance.new("Part")
@@ -106,6 +102,18 @@ local function createPart(name, size, cframe, color, material, parent)
     return part
 end
 
+local function findWorldPart(name)
+    local instance = worldFolder:FindFirstChild(name, true)
+    if instance and instance:IsA("BasePart") then
+        return instance
+    end
+    return nil
+end
+
+local function getOrCreatePart(name, size, cframe, color, material, parent)
+    return findWorldPart(name) or createPart(name, size, cframe, color, material, parent)
+end
+
 local function addWall(name, position, size)
     local wall = createPart(name, size, CFrame.new(position), colors.wall, Enum.Material.Concrete)
     createPart(name .. "Trim", Vector3.new(size.X, 0.45, size.Z), CFrame.new(position - Vector3.new(0, 5.6, 0)), colors.wallTrim, Enum.Material.SmoothPlastic)
@@ -113,6 +121,10 @@ local function addWall(name, position, size)
 end
 
 local function addLabelBillboard(part, text, color)
+    if part:FindFirstChild("Label") then
+        return
+    end
+
     local billboard = Instance.new("BillboardGui")
     billboard.Name = "Label"
     billboard.Size = UDim2.fromOffset(240, 52)
@@ -183,6 +195,26 @@ local function broadcastProgress()
     })
 end
 
+local function makeRainPayload()
+    return {
+        active = rainState.active,
+        remaining = math.max(0, rainState.endsAt - os.clock()),
+        duration = rainState.active and GameConfig.Rain.Duration or GameConfig.Rain.ClearDuration,
+    }
+end
+
+local function setRainActive(active)
+    local duration = active and GameConfig.Rain.Duration or GameConfig.Rain.ClearDuration
+    rainState.active = active
+    rainState.startedAt = os.clock()
+    rainState.endsAt = rainState.startedAt + duration
+    gameEvent:FireAllClients("Rain", makeRainPayload())
+end
+
+local function sendRainState(player)
+    gameEvent:FireClient(player, "Rain", makeRainPayload())
+end
+
 local function fireMessage(player, action, text)
     gameEvent:FireClient(player, action, text)
 end
@@ -224,6 +256,66 @@ local function isPlayerHidden(player)
 
     player:SetAttribute("IsHidden", false)
     return false
+end
+
+local function hasClearLineOfSight(fromPosition, targetPart, extraIgnore)
+    if not targetPart then
+        return false
+    end
+
+    local ignore = { targetPart.Parent }
+    if monsterModel then
+        table.insert(ignore, monsterModel)
+    end
+    if ghostModel then
+        table.insert(ignore, ghostModel)
+    end
+    if extraIgnore then
+        for _, instance in ipairs(extraIgnore) do
+            if instance then
+                table.insert(ignore, instance)
+            end
+        end
+    end
+
+    local rayParams = RaycastParams.new()
+    rayParams.FilterType = Enum.RaycastFilterType.Exclude
+    rayParams.FilterDescendantsInstances = ignore
+    rayParams.RespectCanCollide = true
+
+    local direction = targetPart.Position - fromPosition
+    local hit = workspace:Raycast(fromPosition, direction, rayParams)
+    return hit == nil
+end
+
+local function hasClearMovementSegment(fromPosition, toPosition, movingModel)
+    local direction = toPosition - fromPosition
+    if direction.Magnitude < 0.05 then
+        return true
+    end
+
+    local ignore = {}
+    if movingModel then
+        table.insert(ignore, movingModel)
+    end
+    if monsterModel and monsterModel ~= movingModel then
+        table.insert(ignore, monsterModel)
+    end
+    if ghostModel and ghostModel ~= movingModel then
+        table.insert(ignore, ghostModel)
+    end
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player.Character then
+            table.insert(ignore, player.Character)
+        end
+    end
+
+    local rayParams = RaycastParams.new()
+    rayParams.FilterType = Enum.RaycastFilterType.Exclude
+    rayParams.FilterDescendantsInstances = ignore
+    rayParams.RespectCanCollide = true
+
+    return workspace:Raycast(fromPosition, direction, rayParams) == nil
 end
 
 local function addDesk(position, rotation)
@@ -955,30 +1047,33 @@ local function buildMap()
 end
 
 local function createSpawnAndExit()
-    local spawnLocation = Instance.new("SpawnLocation")
-    spawnLocation.Name = "PlayerSpawn"
-    spawnLocation.Size = Vector3.new(8, 1, 8)
-    spawnLocation.CFrame = CFrame.new(GameConfig.Spawn.Position)
+    local spawnLocation = findWorldPart("PlayerSpawn")
+    if not (spawnLocation and spawnLocation:IsA("SpawnLocation")) then
+        spawnLocation = Instance.new("SpawnLocation")
+        spawnLocation.Name = "PlayerSpawn"
+        spawnLocation.Size = Vector3.new(8, 1, 8)
+        spawnLocation.CFrame = CFrame.new(GameConfig.Spawn.Position)
+        spawnLocation.Color = Color3.fromRGB(70, 115, 200)
+        spawnLocation.Material = Enum.Material.Neon
+        spawnLocation.Parent = worldFolder
+        addLabelBillboard(spawnLocation, "시작 교실", Color3.fromRGB(210, 230, 255))
+    end
     spawnLocation.Anchored = true
     spawnLocation.Neutral = true
     spawnLocation.AllowTeamChangeOnTouch = false
-    spawnLocation.Color = Color3.fromRGB(70, 115, 200)
-    spawnLocation.Material = Enum.Material.Neon
-    spawnLocation.Parent = worldFolder
-    addLabelBillboard(spawnLocation, "시작 교실", Color3.fromRGB(210, 230, 255))
 
-    local exitPart = createPart("EscapeExit", GameConfig.Exit.Size, CFrame.new(GameConfig.Exit.Position), colors.exit, Enum.Material.Neon)
+    local exitPart = getOrCreatePart("EscapeExit", GameConfig.Exit.Size, CFrame.new(GameConfig.Exit.Position), colors.exit, Enum.Material.Neon)
     exitDoorPart = exitPart
     exitPart.CanCollide = false
     exitPart.Transparency = 0.55
     addLabelBillboard(exitPart, "탈출문", Color3.fromRGB(190, 255, 210))
 
-    exitLockPart = createPart("ExitLockBarrier", Vector3.new(8, 9, 12), CFrame.new(GameConfig.Exit.Position), colors.locked, Enum.Material.ForceField)
+    exitLockPart = getOrCreatePart("ExitLockBarrier", Vector3.new(8, 9, 12), CFrame.new(GameConfig.Exit.Position), colors.locked, Enum.Material.ForceField)
     exitLockPart.CanCollide = true
     exitLockPart.Transparency = 0.35
     addLabelBillboard(exitLockPart, "잠김: 퓨즈 3개 + 발전기", Color3.fromRGB(255, 190, 190))
 
-    local victoryPlatform = createPart("VictoryPlatform", Vector3.new(20, 1, 20), CFrame.new(GameConfig.Victory.Position - Vector3.new(0, 2.5, 0)), Color3.fromRGB(70, 170, 105), Enum.Material.Grass)
+    local victoryPlatform = getOrCreatePart("VictoryPlatform", Vector3.new(20, 1, 20), CFrame.new(GameConfig.Victory.Position - Vector3.new(0, 2.5, 0)), Color3.fromRGB(70, 170, 105), Enum.Material.Grass)
     addLabelBillboard(victoryPlatform, "탈출 성공 지점", Color3.fromRGB(210, 255, 220))
 
     local exitDebounce = {}
@@ -1053,18 +1148,21 @@ local function unlockExit()
 end
 
 local function createPickupBase(name, position, color, labelText)
-    local pickup = createPart(name, Vector3.new(3.2, 3.2, 3.2), CFrame.new(position), color, Enum.Material.Neon)
+    local pickup = getOrCreatePart(name, Vector3.new(3.2, 3.2, 3.2), CFrame.new(position), color, Enum.Material.Neon)
     pickup.Shape = Enum.PartType.Ball
     pickup.CanCollide = false
     pickup.CanTouch = true
     addLabelBillboard(pickup, labelText, Color3.fromRGB(255, 255, 210))
 
-    local light = Instance.new("PointLight")
-    light.Name = "PickupGlow"
+    local light = pickup:FindFirstChild("PickupGlow")
+    if not light then
+        light = Instance.new("PointLight")
+        light.Name = "PickupGlow"
+        light.Parent = pickup
+    end
     light.Color = color
     light.Brightness = 1.6
     light.Range = 16
-    light.Parent = pickup
 
     return pickup
 end
@@ -1093,17 +1191,20 @@ end
 
 local function createGenerator()
     local base = CFrame.new(GameConfig.Items.Generator)
-    local generator = createPart("EmergencyGenerator", Vector3.new(6, 4, 4), base, colors.generator, Enum.Material.Metal)
-    local coil = createPart("GeneratorCoil", Vector3.new(4.6, 1.1, 1.1), base * CFrame.new(0, 1.5, -2.2), Color3.fromRGB(120, 230, 255), Enum.Material.Neon)
+    local generator = getOrCreatePart("EmergencyGenerator", Vector3.new(6, 4, 4), base, colors.generator, Enum.Material.Metal)
+    local coil = getOrCreatePart("GeneratorCoil", Vector3.new(4.6, 1.1, 1.1), base * CFrame.new(0, 1.5, -2.2), Color3.fromRGB(120, 230, 255), Enum.Material.Neon)
     coil.CanCollide = false
     addLabelBillboard(generator, "발전기", Color3.fromRGB(190, 240, 255))
 
-    local light = Instance.new("PointLight")
-    light.Name = "GeneratorGlow"
+    local light = generator:FindFirstChild("GeneratorGlow")
+    if not light then
+        light = Instance.new("PointLight")
+        light.Name = "GeneratorGlow"
+        light.Parent = generator
+    end
     light.Color = Color3.fromRGB(90, 210, 255)
     light.Brightness = 1.8
     light.Range = 18
-    light.Parent = generator
 
     local debounce = {}
     generator.Touched:Connect(function(hit)
@@ -1198,6 +1299,29 @@ end
 
 local function createGuideNpc()
     local basePosition = Vector3.new(-56, 3, 17)
+    local existingBody = findWorldPart("GuideBody")
+    if existingBody then
+        addLabelBillboard(existingBody, "로비", Color3.fromRGB(210, 230, 255))
+
+        local hintZone = getOrCreatePart("GuideHintZone", Vector3.new(8, 6, 8), CFrame.new(basePosition), Color3.fromRGB(90, 140, 255), Enum.Material.ForceField)
+        hintZone.Transparency = 1
+        hintZone.CanCollide = false
+
+        local debounce = {}
+        hintZone.Touched:Connect(function(hit)
+            local character = hit:FindFirstAncestorOfClass("Model")
+            local player = character and Players:GetPlayerFromCharacter(character)
+            if player and not debounce[player] then
+                debounce[player] = true
+                fireMessage(player, "Info", GameConfig.Messages.Guide)
+                task.delay(6, function()
+                    debounce[player] = nil
+                end)
+            end
+        end)
+        return
+    end
+
     local npc = Instance.new("Model")
     npc.Name = "GuideRobby"
     npc.Parent = worldFolder
@@ -1253,6 +1377,7 @@ local function createMonster()
     local monster = Instance.new("Model")
     monster.Name = "EyeMonster"
     monster.Parent = worldFolder
+    monsterModel = monster
 
     local hitbox = createPart("MonsterHitbox", Vector3.new(5, 7, 5), CFrame.new(GameConfig.Monster.SpawnPosition), colors.monster, Enum.Material.SmoothPlastic, monster)
     hitbox.Transparency = 1
@@ -1303,6 +1428,7 @@ local function createGhost()
     local ghost = Instance.new("Model")
     ghost.Name = "LibraryGhost"
     ghost.Parent = worldFolder
+    ghostModel = ghost
 
     local base = GameConfig.Ghost.SpawnPosition
     local root = createPart("GhostRoot", Vector3.new(4, 6, 4), CFrame.new(base), colors.ghost, Enum.Material.ForceField, ghost)
@@ -1394,6 +1520,8 @@ local function startGhostBrain(ghost)
     local waypointIndex = 1
     local scareCooldowns = {}
     local bornAt = os.clock()
+    local sharedPath = { waypoints = {}, wpIndex = 1 }
+    local lastPathAt = 0
 
     RunService.Heartbeat:Connect(function(deltaTime)
         if not ghost.Parent or not ghost.PrimaryPart then
@@ -1405,23 +1533,64 @@ local function startGhostBrain(ghost)
         local destination = GameConfig.Ghost.Waypoints[waypointIndex]
         local baseY = GameConfig.Ghost.MoveY
         local floatingY = baseY + math.sin((os.clock() - bornAt) * 2.4) * 0.75
-        local currentFlat = Vector3.new(pos.X, floatingY, pos.Z)
-        local destinationFlat = Vector3.new(destination.X, floatingY, destination.Z)
-        local offset = destinationFlat - currentFlat
+        local flatDistance = (Vector3.new(destination.X, baseY, destination.Z) - Vector3.new(pos.X, baseY, pos.Z)).Magnitude
 
-        if offset.Magnitude < 2 then
+        if flatDistance < 2 then
             waypointIndex = waypointIndex % #GameConfig.Ghost.Waypoints + 1
-        else
-            local step = math.min(GameConfig.Ghost.FloatSpeed * deltaTime, offset.Magnitude)
-            local nextPos = currentFlat + offset.Unit * step
-            ghost:PivotTo(CFrame.lookAt(nextPos, Vector3.new(destinationFlat.X, nextPos.Y, destinationFlat.Z)))
+            sharedPath.waypoints = {}
+            sharedPath.wpIndex = 1
+            destination = GameConfig.Ghost.Waypoints[waypointIndex]
+        end
+
+        if #sharedPath.waypoints == 0 or sharedPath.wpIndex > #sharedPath.waypoints or os.clock() - lastPathAt > 1.5 then
+            lastPathAt = os.clock()
+            local path = PathfindingService:CreatePath({
+                AgentRadius = 2.5,
+                AgentHeight = 6.5,
+                AgentCanJump = false,
+                AgentCanClimb = false,
+            })
+
+            local ok = pcall(function()
+                path:ComputeAsync(Vector3.new(pos.X, baseY, pos.Z), Vector3.new(destination.X, baseY, destination.Z))
+            end)
+
+            if ok and path.Status == Enum.PathStatus.Success then
+                local wps = path:GetWaypoints()
+                if #wps > 1 then
+                    sharedPath.waypoints = wps
+                    sharedPath.wpIndex = 2
+                end
+            end
+        end
+
+        local waypoint = sharedPath.waypoints[sharedPath.wpIndex]
+        if waypoint then
+            local target = Vector3.new(waypoint.Position.X, floatingY, waypoint.Position.Z)
+            local currentFlat = Vector3.new(pos.X, floatingY, pos.Z)
+            local offset = target - currentFlat
+            if offset.Magnitude < 1.6 then
+                sharedPath.wpIndex += 1
+            elseif offset.Magnitude >= 0.1 then
+                local step = math.min(GameConfig.Ghost.FloatSpeed * deltaTime, offset.Magnitude)
+                local nextPos = currentFlat + offset.Unit * step
+                if not hasClearMovementSegment(pos, nextPos, ghost) then
+                    sharedPath.waypoints = {}
+                    sharedPath.wpIndex = 1
+                    return
+                end
+                ghost:PivotTo(CFrame.lookAt(nextPos, Vector3.new(target.X, nextPos.Y, target.Z)))
+            end
         end
 
         for _, player in ipairs(Players:GetPlayers()) do
             if not wonPlayers[player] then
                 local character = player.Character
                 local rootPart = character and character:FindFirstChild("HumanoidRootPart")
-                if rootPart and (rootPart.Position - ghost.PrimaryPart.Position).Magnitude <= GameConfig.Ghost.ScareRange then
+                if rootPart
+                    and (rootPart.Position - ghost.PrimaryPart.Position).Magnitude <= GameConfig.Ghost.ScareRange
+                    and hasClearLineOfSight(ghost.PrimaryPart.Position, rootPart)
+                then
                     local lastScare = scareCooldowns[player] or 0
                     if os.clock() - lastScare >= GameConfig.Ghost.ScareCooldown then
                         scareCooldowns[player] = os.clock()
@@ -1461,12 +1630,14 @@ local function getNearestPlayer(position, currentTarget)
         local root = character and character:FindFirstChild("HumanoidRootPart")
         if humanoid and root and humanoid.Health > 0 and not isPlayerHidden(player) then
             local distance = (root.Position - position).Magnitude
+            local isNoisy = (player:GetAttribute("NoisyUntil") or 0) > os.clock()
             local effectiveRange = range
-            if (player:GetAttribute("NoisyUntil") or 0) > os.clock() then
+            if isNoisy then
                 effectiveRange = math.max(effectiveRange, 72)
             end
 
-            if distance < effectiveRange and distance < bestDistance then
+            local canDetect = isNoisy or hasClearLineOfSight(position + Vector3.new(0, 2, 0), root)
+            if canDetect and distance < effectiveRange and distance < bestDistance then
                 bestPlayer = player
                 bestDistance = distance
             end
@@ -1492,15 +1663,9 @@ local function isFlashlightBlinding(monsterPosition)
         if dist > 45 then continue end  -- 손전등 유효 사거리
 
         local dot = root.CFrame.LookVector:Dot(toMonster.Unit)
-        if dot > 0.68 then  -- 약 47도 원뿔 안
-            local rayParams = RaycastParams.new()
-            rayParams.FilterType = Enum.RaycastFilterType.Exclude
-            rayParams.FilterDescendantsInstances = { character, worldFolder:FindFirstChild("EyeMonster") }
-
-            local hit = workspace:Raycast(head.Position, toMonster, rayParams)
-            if not hit then
-                return true, player
-            end
+        if dot > 0.68 and hasClearLineOfSight(head.Position, monsterModel and monsterModel.PrimaryPart, { character }) then
+            return true, player
+        end
         end
     end
     return false, nil
@@ -1553,7 +1718,10 @@ local function startMonsterBrain(monster)
         local character = hit:FindFirstAncestorOfClass("Model")
         local player = character and Players:GetPlayerFromCharacter(character)
         if player then
-            catchPlayer(player)
+            local targetRoot = character:FindFirstChild("HumanoidRootPart")
+            if targetRoot and monster.PrimaryPart and hasClearLineOfSight(monster.PrimaryPart.Position, targetRoot) then
+                catchPlayer(player)
+            end
         end
     end)
 
@@ -1617,8 +1785,11 @@ local function startMonsterBrain(monster)
         end
 
         -- 추격 범위 내 잡기 시도
-        if isChasing and dist <= GameConfig.Monster.CatchRange then
-            catchPlayer(targetPlayer)
+        if isChasing and dist <= GameConfig.Monster.CatchRange and targetPlayer and targetPlayer.Character then
+            local targetRoot = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
+            if targetRoot and hasClearLineOfSight(pos + Vector3.new(0, 2, 0), targetRoot) then
+                catchPlayer(targetPlayer)
+            end
         end
 
         -- 손전등 눈부심 판정
@@ -1650,38 +1821,8 @@ local function startMonsterBrain(monster)
         local wpIndex = sharedPath.wpIndex
 
         if #waypoints == 0 or wpIndex > #waypoints then
-            -- 유효한 경로가 아직 없거나 계산에 실패했을 때도 멈추지 않게 직접 이동한다.
-            local fallbackDestination
-            if isChasing and targetPlayer and targetPlayer.Character then
-                local targetRoot = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
-                fallbackDestination = targetRoot and targetRoot.Position
-            else
-                fallbackDestination = GameConfig.Monster.Waypoints[patrolIndex]
-            end
-
-            if fallbackDestination then
-                local Y = GameConfig.Monster.MoveY
-                local currentFlat = Vector3.new(pos.X, Y, pos.Z)
-                local flatDestination = Vector3.new(fallbackDestination.X, Y, fallbackDestination.Z)
-                local offset = flatDestination - currentFlat
-
-                if offset.Magnitude >= 0.1 then
-                    local step = math.min(speed * dt, offset.Magnitude)
-                    local nextPos = currentFlat + offset.Unit * step
-                    monster:PivotTo(CFrame.lookAt(nextPos, Vector3.new(flatDestination.X, nextPos.Y, flatDestination.Z)))
-                end
-            end
-
-            -- 순찰 목적지 도달 여부 확인
-            if not isChasing then
-                local dest = GameConfig.Monster.Waypoints[patrolIndex]
-                local flatDist = (Vector3.new(dest.X, pos.Y, dest.Z) - pos).Magnitude
-                if flatDist < 4 then
-                    patrolIndex = patrolIndex % #GameConfig.Monster.Waypoints + 1
-                    sharedPath.waypoints = {}
-                    sharedPath.wpIndex = 1
-                end
-            end
+            -- Pathfinding이 준비되지 않았거나 실패했으면 직선 이동하지 않는다.
+            -- PivotTo 직선 이동은 벽을 통과할 수 있으므로, 유효한 경로가 있을 때만 움직인다.
             return
         end
 
@@ -1706,11 +1847,15 @@ local function startMonsterBrain(monster)
         local step = math.min(speed * dt, offset.Magnitude)
         local nextPos = currentFlat + offset.Unit * step
         nextPos = Vector3.new(nextPos.X, Y, nextPos.Z)
+        if not hasClearMovementSegment(pos, nextPos, monster) then
+            sharedPath.waypoints = {}
+            sharedPath.wpIndex = 1
+            return
+        end
         monster:PivotTo(CFrame.lookAt(nextPos, Vector3.new(flat.X, nextPos.Y, flat.Z)))
     end)
 end
 
-buildMap()
 createSpawnAndExit()
 createObjectivesAndItems()
 local monster = createMonster()
@@ -1718,12 +1863,23 @@ startMonsterBrain(monster)
 local ghost = createGhost()
 startGhostBrain(ghost)
 
+task.spawn(function()
+    task.wait(GameConfig.Rain.InitialClearDuration)
+    while true do
+        setRainActive(true)
+        task.wait(GameConfig.Rain.Duration)
+        setRainActive(false)
+        task.wait(GameConfig.Rain.ClearDuration)
+    end
+end)
+
 Players.PlayerAdded:Connect(function(player)
     player:SetAttribute("HasFlashlight", false)
     player:SetAttribute("FlashlightActive", false)
     player:SetAttribute("ShieldCount", 0)
     player:SetAttribute("IsHidden", false)
     player:SetAttribute("HasEscaped", false)
+    sendRainState(player)
 
     player.CharacterAdded:Connect(function()
         task.wait(0.5)

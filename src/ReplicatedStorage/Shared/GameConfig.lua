@@ -118,6 +118,15 @@ local GameConfig = {
         Generator = Vector3.new(230, 2.2, -145),
     },
 
+    Rain = {
+        Duration = 180,
+        ClearDuration = 600,
+        InitialClearDuration = 45,
+        FadeTime = 4,
+        ParticleRate = 900,
+        SoundVolume = 0.32,
+    },
+
     -- rbxassetid:// 형식으로 수정 (올바른 Roblox 에셋 ID 형식)
     -- 소리가 어색하면 Roblox 오디오 라이브러리에서 교체하세요
     Sounds = {
@@ -125,6 +134,7 @@ local GameConfig = {
         MonsterNear = "rbxassetid://2645676598",
         Caught     = "rbxassetid://4962698843",
         Escaped    = "rbxassetid://4612431428",
+        Rain       = "rbxassetid://9112854440",
     },
 }
 

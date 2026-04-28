@@ -1,0 +1,36 @@
+<roblox version="4">
+  <Item class="Camera" referent="0">
+    <Properties>
+      <string name="Name">Camera</string>
+      <CoordinateFrame name="CFrame">
+        <X>0</X>
+        <Y>420</Y>
+        <Z>520</Z>
+        <R00>1</R00>
+        <R01>0</R01>
+        <R02>0</R02>
+        <R10>0</R10>
+        <R11>0.778</R11>
+        <R12>-0.628</R12>
+        <R20>0</R20>
+        <R21>0.628</R21>
+        <R22>0.778</R22>
+      </CoordinateFrame>
+      <float name="FieldOfView">70</float>
+      <CoordinateFrame name="Focus">
+        <X>0</X>
+        <Y>0</Y>
+        <Z>0</Z>
+        <R00>1</R00>
+        <R01>0</R01>
+        <R02>0</R02>
+        <R10>0</R10>
+        <R11>1</R11>
+        <R12>0</R12>
+        <R20>0</R20>
+        <R21>0</R21>
+        <R22>1</R22>
+      </CoordinateFrame>
+    </Properties>
+  </Item>
+</roblox>

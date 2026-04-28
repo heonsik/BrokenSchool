@@ -164,6 +164,15 @@ finalChaseOverlay.Size = UDim2.fromScale(1, 1)
 finalChaseOverlay.ZIndex = 45
 finalChaseOverlay.Parent = screenGui
 
+local rainOverlay = Instance.new("Frame")
+rainOverlay.Name = "RainOverlay"
+rainOverlay.BackgroundColor3 = Color3.fromRGB(32, 48, 64)
+rainOverlay.BackgroundTransparency = 1
+rainOverlay.BorderSizePixel = 0
+rainOverlay.Size = UDim2.fromScale(1, 1)
+rainOverlay.ZIndex = 38
+rainOverlay.Parent = screenGui
+
 local lastSlideTime = -GameConfig.Slide.Cooldown
 local isSliding = false
 local hasFlashlight = false
@@ -171,6 +180,7 @@ local flashlightOn = false
 local flashlightObject = nil
 local finalChaseActive = false
 local finalPulseClock = 0
+local rainActive = false
 
 local existingSoundFolder = SoundService:FindFirstChild("BrokenSchoolSounds")
 if existingSoundFolder then
@@ -195,9 +205,46 @@ local ambienceSound = createSound("Ambience", GameConfig.Sounds.Ambience, 0.22, 
 local monsterNearSound = createSound("MonsterNear", GameConfig.Sounds.MonsterNear, 0, true)
 local caughtSound = createSound("Caught", GameConfig.Sounds.Caught, 0.45, false)
 local escapedSound = createSound("Escaped", GameConfig.Sounds.Escaped, 0.55, false)
+local rainSound = createSound("Rain", GameConfig.Sounds.Rain, 0, true)
 
 ambienceSound:Play()
 monsterNearSound:Play()
+
+local rainPart = Instance.new("Part")
+rainPart.Name = "LocalRainEmitter"
+rainPart.Anchored = true
+rainPart.CanCollide = false
+rainPart.CanTouch = false
+rainPart.CanQuery = false
+rainPart.Transparency = 1
+rainPart.Size = Vector3.new(190, 1, 190)
+rainPart.Parent = workspace
+
+local rainEmitter = Instance.new("ParticleEmitter")
+rainEmitter.Name = "RainDrops"
+rainEmitter.Enabled = false
+rainEmitter.Texture = "rbxasset://textures/particles/sparkles_main.dds"
+rainEmitter.Color = ColorSequence.new(Color3.fromRGB(165, 205, 235), Color3.fromRGB(220, 235, 255))
+rainEmitter.Transparency = NumberSequence.new({
+    NumberSequenceKeypoint.new(0, 0.18),
+    NumberSequenceKeypoint.new(0.72, 0.34),
+    NumberSequenceKeypoint.new(1, 1),
+})
+rainEmitter.Size = NumberSequence.new({
+    NumberSequenceKeypoint.new(0, 0.18),
+    NumberSequenceKeypoint.new(1, 0.08),
+})
+rainEmitter.Lifetime = NumberRange.new(0.65, 0.9)
+rainEmitter.Rate = GameConfig.Rain.ParticleRate
+rainEmitter.Speed = NumberRange.new(78, 96)
+rainEmitter.SpreadAngle = Vector2.new(8, 8)
+rainEmitter.Acceleration = Vector3.new(-10, -145, -6)
+rainEmitter.EmissionDirection = Enum.NormalId.Bottom
+rainEmitter.LightEmission = 0.15
+rainEmitter.LightInfluence = 0.25
+rainEmitter.Orientation = Enum.ParticleOrientation.VelocityParallel
+rainEmitter.Squash = NumberSequence.new(-0.78)
+rainEmitter.Parent = rainPart
 
 local function getCharacterParts()
     local character = player.Character
@@ -240,6 +287,47 @@ local function flashScreen(color, peakTransparency, duration)
     fadeIn.Completed:Once(function()
         fadeOut:Play()
     end)
+end
+
+local function setRainEnabled(enabled)
+    if rainActive == enabled then
+        return
+    end
+
+    rainActive = enabled
+    rainEmitter.Enabled = enabled
+
+    if enabled and not rainSound.IsPlaying then
+        rainSound:Play()
+    end
+
+    local fadeTime = GameConfig.Rain.FadeTime
+    TweenService:Create(
+        rainOverlay,
+        TweenInfo.new(fadeTime, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+        { BackgroundTransparency = enabled and 0.86 or 1 }
+    ):Play()
+
+    TweenService:Create(
+        ambienceSound,
+        TweenInfo.new(fadeTime, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+        { Volume = enabled and 0.14 or 0.22 }
+    ):Play()
+
+    local rainTween = TweenService:Create(
+        rainSound,
+        TweenInfo.new(fadeTime, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+        { Volume = enabled and GameConfig.Rain.SoundVolume or 0 }
+    )
+    rainTween:Play()
+
+    if not enabled then
+        rainTween.Completed:Once(function()
+            if not rainActive then
+                rainSound:Stop()
+            end
+        end)
+    end
 end
 
 local function updateInventoryLabel()
@@ -406,6 +494,9 @@ gameEvent.OnClientEvent:Connect(function(action, text)
         finalChaseActive = true
         flashScreen(Color3.fromRGB(255, 60, 20), 0.48, 1.2)
         showMessage(text or GameConfig.Messages.FinalChase, Color3.fromRGB(255, 210, 190))
+    elseif action == "Rain" then
+        local state = text or {}
+        setRainEnabled(state.active == true)
     end
 end)
 
@@ -413,6 +504,13 @@ RunService.RenderStepped:Connect(function(deltaTime)
     updateSlideLabel()
     updateInventoryLabel()
     hiddenLabel.Visible = player:GetAttribute("IsHidden") == true
+
+    if rainActive then
+        local camera = workspace.CurrentCamera
+        if camera then
+            rainPart.CFrame = CFrame.new(camera.CFrame.Position + Vector3.new(0, 72, 0))
+        end
+    end
 
     local _, _, root = getCharacterParts()
     local world = workspace:FindFirstChild(GameConfig.WorldFolderName)
